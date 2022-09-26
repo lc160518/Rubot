@@ -34,4 +34,11 @@ async def on_message(message):
     if "test" in message.content:
         await message.channel.send("message contains word")
 
+@client.event
+async def on_message(message):
+    if client.user == message.author:
+        return
+    if message.content.startswith("Monkey"):
+        message.channel.send("Monkey noticed")
+
 client.run(TOKEN)

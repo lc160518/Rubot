@@ -24,7 +24,6 @@ async def on_ready():
 
 
 main_channel = ""
-game_active = False
 
 
 @client.event
@@ -38,15 +37,7 @@ async def on_message(message):
         global main_channel
         main_channel = client.get_channel(message.channel.id)
         await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
-        global game_active
-        game_active = True
         await main_channel.send("Wie doet er mee met Weervolven?")
-        while game_active:
-            done_joining = False
-            if not message.content.contains("Done" or "done"):
-                i = 0
-                message.content.startswith("ik" or "Ik")
-
 
 
 def role_selector():
