@@ -1,24 +1,37 @@
+# bot.py
+import os
+import sys
+import math
+import time
+
 import discord
-import asyncio
+from discord import app_commands
+from dotenv import load_dotenv
+
+intents = discord.Intents.default()
+intents.typing = False
+intents.presences = False
+intents.message_content = True
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
+client = discord.Client(intents=intents)
 
 
-class MyClient(discord.Client):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    async def setup_hook(self) -> None:
-        # create the background task and run it in the background
-        self.bg_task = self.loop.create_task(self.my_background_task())
-
-    async def on_ready(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
-        print('------')
-
-    async def my_background_task(self):
-        await self.wait_until_ready()
-        channel = self.get_channel(1021842002591105065)  # channel ID goes here
-        await channel.send("eyo")
+@client.event
+async def on_ready():
+    print(f'{client.user} im in')
 
 
-client = MyClient(intents=discord.Intents.default())
-client.run('ODYwMjQ0OTUzNjk0MzM5MTIy.GlFqf-.7wQ4Zhk55M8gsRjXnW_oBVkvDTRkGaVGhEb_JY')
+main_channel = ""
+game_active = False
+
+
+@client.event
+async def on_message(message):
+    if client.user == message.author:
+        return
+    if "test" in message.content:
+        await message.channel.send("message contains word")
+
+client.run(TOKEN)

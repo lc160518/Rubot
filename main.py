@@ -2,6 +2,7 @@
 import os
 import sys
 import math
+import time
 
 import discord
 from discord import app_commands
@@ -22,15 +23,8 @@ async def on_ready():
     print(f'{client.user} im in')
 
 
-@client.event
-async def on_message(message):
-    if client.user == message.author:
-        return
-    print(message.content)
-    if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
-        print(message.content)
-        main_channel = client.get_channel(message.channel.id)
-        await message.channel.send("Dit channel is nu main channel!")
+main_channel = ""
+game_active = False
 
 
 @client.event
@@ -39,6 +33,20 @@ async def on_message(message):
         return
     if message.content.startswith("create channel") or message.content.startswith("Create channel"):
         test_channel = await message.guild.create_text_channel(name="monkey", reason="test")
+
+    if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
+        global main_channel
+        main_channel = client.get_channel(message.channel.id)
+        await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
+        global game_active
+        game_active = True
+        await main_channel.send("Wie doet er mee met Weervolven?")
+        while game_active:
+            done_joining = False
+            if not message.content.contains("Done" or "done"):
+                i = 0
+                message.content.startswith("ik" or "Ik")
+
 
 
 def role_selector():
