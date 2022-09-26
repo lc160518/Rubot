@@ -21,8 +21,12 @@ async def on_ready():
 
 
 @client.event
+async def get_channel():
+    channel = client.get_channel(1021842002591105065)
+    await channel.send("eyo")
+
+@client.event
 async def on_message(message):
-    print(message.content)
+    main_channel = message.channel.id
 
-
-client.run("ODYwMjQ0OTUzNjk0MzM5MTIy.GlFqf-.7wQ4Zhk55M8gsRjXnW_oBVkvDTRkGaVGhEb_JY")
+client.run(TOKEN)
