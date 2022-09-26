@@ -24,6 +24,8 @@ async def on_ready():
 
 
 main_channel = ""
+players = []
+done_joining = False
 
 
 @client.event
@@ -39,6 +41,15 @@ async def on_message(message):
         await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
         await main_channel.send("Wie doet er mee met Weervolven?")
 
+        def meedoen():
+            global players
+            global done_joining
+            while len(players) != 24 and done_joining == False:
+                for mensen in players:
+                    if message.content.startswith("Ik" or "ik"):
+                        players.append(message.author)
+        meedoen()
+
 
 def role_selector():
     roles = ["Weerwolf",
@@ -51,10 +62,6 @@ def role_selector():
              "Burgemeester",
              "Dief"
              ]
-
-
-def participants():
-    players = []
 
 
 client.run(TOKEN)
