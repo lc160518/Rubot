@@ -1,11 +1,8 @@
 # bot.py
 import os
-import sys
-import math
-import time
+import asyncio
 
 import discord
-from discord import app_commands
 from dotenv import load_dotenv
 
 intents = discord.Intents.default()
@@ -23,10 +20,11 @@ async def on_ready():
     print(f'{client.user} im in')
 
 
-main_channel = ""
+main_channel = None
+joining = True
 players = []
-done_joining = False
-
+i = 0
+already_joined_amount = 0
 
 @client.event
 async def on_message(message):
@@ -41,14 +39,44 @@ async def on_message(message):
         await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
         await main_channel.send("Wie doet er mee met Weervolven?")
 
-        def meedoen():
-            global players
-            global done_joining
-            while len(players) != 24 and done_joining == False:
-                for mensen in players:
-                    if message.content.startswith("Ik" or "ik"):
-                        players.append(message.author)
-        meedoen()
+    if message.content.startswith("enable joining"):
+        channel = message.channel
+        global i
+        i += 1
+        await channel.send("Stuur \"ik\" om mee te doen!")
+
+        global players
+        global joining
+        global already_joined_amount
+
+        while joining:
+            def check(m):
+                return client.user != message.author \
+                       and m.content == "ik" \
+                       and m.channel == channel \
+                       and m.content != "disable joining"
+
+            msg = await client.wait_for("message", check=check)
+            if message.content.startswith("disable joining"):
+                await message.channel.send(message.content)
+                break
+
+            if message.author.name not in players:
+                await msg.channel.send("<@{.author.id}> joined".format(msg))
+            else:
+                await msg.channel.send("<@{.author.id}> already joined".format(msg))
+                already_joined_amount += 1
+            if not msg.author.name in players:
+                players.append(msg.author.name)
+            print(players)
+
+            if already_joined_amount == 3:
+                await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
+
+
+
+
+        message.channel.send("Iedereen is gejoined!")
 
 
 def role_selector():
