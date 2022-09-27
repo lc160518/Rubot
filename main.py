@@ -1,6 +1,5 @@
 # bot.py
 import os
-import asyncio
 
 import discord
 from dotenv import load_dotenv
@@ -26,12 +25,13 @@ players = []
 i = 0
 already_joined_amount = 0
 
+
 @client.event
 async def on_message(message):
     if client.user == message.author:
         return
     if message.content.startswith("create channel") or message.content.startswith("Create channel"):
-        test_channel = await message.guild.create_text_channel(name="monkey", reason="test")
+        await message.guild.create_text_channel(name="monkey", reason="test")
 
     if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
         global main_channel
@@ -66,15 +66,12 @@ async def on_message(message):
             else:
                 await msg.channel.send("<@{.author.id}> already joined".format(msg))
                 already_joined_amount += 1
-            if not msg.author.name in players:
+            if msg.author.name not in players:
                 players.append(msg.author.name)
             print(players)
 
             if already_joined_amount == 3:
                 await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
-
-
-
 
         message.channel.send("Iedereen is gejoined!")
 
