@@ -78,7 +78,7 @@ async def on_message(message):
 
         message.channel.send("Iedereen is gejoined!")
 
-
+print("monkey")
 def role_selector():
     roles = {"Weerwolf": already_joined_amount//6,
              "Burger": 1,
