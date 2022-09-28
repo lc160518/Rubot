@@ -60,9 +60,6 @@ async def on_message(message):
                        and m.content != "disable joining"
 
             msg = await client.wait_for("message", check=check)
-            if message.content.startswith("disable joining"):
-                await message.channel.send(message.content)
-                break
 
             if message.author.name not in players:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
@@ -73,14 +70,17 @@ async def on_message(message):
                 players.append(msg.author.name)
             print(players)
 
-            if already_joined_amount == 3:
+            if already_joined_amount == 2:
                 await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
+
+            if message.content.startswith("disable joining"):
+                joining = False
 
         message.channel.send("Iedereen is gejoined!")
 
-print("monkey")
+
 def role_selector():
-    roles = {"Weerwolf": already_joined_amount//6,
+    roles = {"Weerwolf": already_joined_amount // 6,
              "Burger": 1,
              "Ziener": 1,
              "Heks": 1,
@@ -88,10 +88,9 @@ def role_selector():
              "Cupido": 1,
              "Het Onschuldige meisje": 1,
              "Dief": 1}
-    if already_joined_amount == len(roles) -1:
+    if already_joined_amount == len(roles) - 1:
         roles["Dief"] = 0
-    roles["Burger"] = already_joined_amount - roles["Weerwolf"] - (len(roles)-2)
-
+    roles["Burger"] = already_joined_amount - roles["Weerwolf"] - (len(roles) - 2)
 
 
 client.run(TOKEN)
