@@ -88,7 +88,8 @@ def role_selector():
              "Cupido": 1,
              "Het Onschuldige meisje": 1,
              "Dief": 1}
-
+    if already_joined_amount == len(roles) -1:
+        roles["Dief"] = 0
     roles["Burger"] = already_joined_amount - roles["Weerwolf"] - (len(roles)-2)
 
 
