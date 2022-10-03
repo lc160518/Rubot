@@ -9,6 +9,7 @@ intents = discord.Intents.default()
 intents.typing = False
 intents.presences = False
 intents.message_content = True
+intents.members = True
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -93,13 +94,27 @@ async def on_message(message):
             await message.guild.create_text_channel(name=possible_channels[e], reason="test")
             created_channels.append(possible_channels[e])
             e += 1
+        print(created_channels)
+
+    if message.content.startswith("status"):
+        print(message.guild.get_guild_member(398769543482179585))
 
     text_channel_list = []
     if message.content.startswith("delete channels"):
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
+        print(text_channel_list)
+        for channel in text_channel_list:
             if channel.name in created_channels:
-                channel.guild.delete()
+                await channel.delete()
+
+    if message.content.startswith("delete all channels"):
+        for channel in message.guild.text_channels:
+            text_channel_list.append(channel)
+        print(text_channel_list)
+        for channel in text_channel_list[:0] + text_channel_list[0 + 1:]:
+            await channel.delete()
+
 
 created_channels = []
 possible_channels = ["weerwolfChannel", "burgerChannel", "zienerChannel", "heksChannel", "jagerChannel",
