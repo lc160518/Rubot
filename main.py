@@ -74,6 +74,7 @@ async def on_message(message):
                 players.update({msg.author.name: "undefined"})
             print(players)
             print(players[0])
+            print(players)
 
             if already_joined_amount == 3:
                 await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
