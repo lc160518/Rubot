@@ -51,3 +51,7 @@ De heks:
 Burgemeester:
 - [ ] heeft 1,5 stem. (dus bij ties wint de stemmen met de burgemeester)
 - [ ] als burgemeester sterft kiest hij nieuwe.
+
+Julian 2's request:
+- [ ] een skill issue check in de bot hebben.
+
