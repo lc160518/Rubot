@@ -3,6 +3,7 @@ import os
 
 import discord
 from dotenv import load_dotenv
+import random
 
 intents = discord.Intents.default()
 intents.typing = False
@@ -21,10 +22,10 @@ async def on_ready():
 
 main_channel = None
 joining = True
-players = []
+players = ["Pedro", "Francois", "Among", "Us", "Hoe is het"] #moet nog geleegd worden
 i = 0
 already_joined_amount = 0
-
+roleNumbers = []
 
 @client.event
 async def on_message(message):
@@ -79,9 +80,6 @@ async def on_message(message):
         message.channel.send("Iedereen is gejoined!")
 
 
-print("monkey")
-
-
 def role_selector():
     roles = {"Weerwolf": len(players) // 6,
              "Burger": 1,
@@ -123,6 +121,11 @@ def role_selector():
         rolesL.append("Het Onschuldige Meisje")
         i += 1
     i = 0
+    for i in range(0, len(players)):
+        roleNumbers.append(i)
+
+    print(roleNumbers)
+    print(rolesL)
 
 
 client.run(TOKEN)
