@@ -4,13 +4,11 @@ import os
 import discord
 from dotenv import load_dotenv
 import random
-from discord import member
 
 intents = discord.Intents.default()
 intents.typing = False
 intents.presences = False
 intents.message_content = True
-intents.members = True
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -39,7 +37,7 @@ async def on_message(message):
 
     msg_placeholder = message
 
-    if message.content.startswith("a"):
+    if message.content.startswith("ik ben een vreselijk idioot persoon"):
         await pre_game(msg_placeholder)
 
     if client.user == message.author:
@@ -97,9 +95,6 @@ async def on_message(message):
             e += 1
         print(created_channels)
 
-    if message.content.startswith("status"):
-        print(message.guild.get_guild_member(398769543482179585))
-
     text_channel_list = []
     if message.content.startswith("delete channels"):
         for channel in message.guild.text_channels:
@@ -112,14 +107,14 @@ async def on_message(message):
     if message.content.startswith("delete all channels"):
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
-        print(text_channel_list)
+
         for channel in text_channel_list[:0] + text_channel_list[0 + 1:]:
             await channel.delete()
 
 
 created_channels = []
-possible_channels = ["weerwolfChannel", "burgerChannel", "zienerChannel", "heksChannel", "jagerChannel",
-                     "cupidoChannel", "meisjeChannel", "doodChannel"]
+possible_channels = ["weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel", "jager_channel",
+                     "cupido_channel", "meisje_channel", "dood_channel"]
 
 
 #        weerwolfChannel
@@ -142,7 +137,7 @@ def role_selector():
              "Het Onschuldige Meisje": 1}
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
 
-    # maakt een lijst met de rollen en hoevaak ze er zijn
+    # maakt een lijst met de rollen en hoe vaak ze er zijn
     global i
     i = 0
     while i != int(roles["Weerwolf"]):
