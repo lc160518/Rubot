@@ -59,24 +59,24 @@ async def on_message(message):
             def check(m):
                 return client.user != message.author \
                        and m.content == "ik" \
-                       and m.channel == channel \
-                       and m.content != "disable joining"
+                       or m.content == "disable joining" \
+                       and m.channel == channel
 
             msg = await client.wait_for("message", check=check)
-            if message.content.startswith("disable joining"):
-                await message.channel.send(message.content)
-                break
 
-            if msg.author.name not in players:
+            if msg.author.name not in players and "ik" in msg.content:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
-            else:
+            elif message.author.name in players and "ik" in msg.content:
                 await msg.channel.send("<@{.author.id}> already joined".format(msg))
                 already_joined_amount += 1
-            if msg.author.name not in players:
-                players.update({msg.author.name: "undefined"})
+            if msg.author.name not in players and "ik" in msg.content:
+                players.update({msg.author.name: "geen rol"})
 
             if already_joined_amount == 3:
                 await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
+
+            if msg.content.startswith("disable joining"):
+                joining = False
 
         message.channel.send("Iedereen is gejoined!")
         global playerNames
