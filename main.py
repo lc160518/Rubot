@@ -83,6 +83,7 @@ async def on_message(message):
         playerNames = list(players)
         role_selector()
 
+
 def role_selector():
     roles = {"Weerwolf": len(players) // 6,
              "Burger": 1,
