@@ -44,8 +44,6 @@ async def on_message(message):
 
     if message.content.startswith("enable joining"):
         channel = message.channel
-        global i
-        i += 1
         await channel.send("Stuur \"ik\" om mee te doen!")
 
         global players
@@ -57,12 +55,14 @@ async def on_message(message):
                 return client.user != message.author \
                        and m.content == "ik" \
                        and m.channel == channel \
-                       and m.content != "disable joining"
 
-            msg = await client.wait_for("message", check=check)
-            if message.content.startswith("disable joining"):
+            def stopcheck(m):
+                return client.user != message.author and m.content == "disable joining"
+
+            msg = await client.wait_for("message", check=stopcheck)
+            if msg.content.startswith("disable joining"):
                 await message.channel.send(message.content)
-                break
+                joining = False
 
             if message.author.name not in players:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
@@ -125,4 +125,4 @@ def role_selector():
     i = 0
 
 
-client.run(TOKEN)
+client.run("ODYwMjQ0OTUzNjk0MzM5MTIy.GPwULx.KAimpS7SM17juyxfapEl8m8zkxn85Fmm6dQi2o")
