@@ -4,6 +4,7 @@ import os
 import discord
 from dotenv import load_dotenv
 import random
+from discord import member
 
 intents = discord.Intents.default()
 intents.typing = False
@@ -118,7 +119,7 @@ async def on_message(message):
 
 created_channels = []
 possible_channels = ["weerwolfChannel", "burgerChannel", "zienerChannel", "heksChannel", "jagerChannel",
-                     "cupidoChannel", "meisjeChannel", "doodChannel", "loverschannel", "regels"]
+                     "cupidoChannel", "meisjeChannel", "doodChannel", "loverschannel"]
 
 
 #        weerwolfChannel
