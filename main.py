@@ -84,29 +84,21 @@ async def on_message(message):
                 role_selector()
 
         await message.channel.send("Iedereen is gejoined!")
+    global created_channels
 
     if message.content.startswith("create channels"):
         for e in range(0, len(possible_channels)):
             await message.guild.create_text_channel(name=possible_channels[e], reason="test")
             created_channels.append(possible_channels[e])
             e += 1
-        print(created_channels)
 
     text_channel_list = []
     if message.content.startswith("delete channels"):
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
-        print(text_channel_list)
         for channel in text_channel_list:
             if channel.name in created_channels:
                 await channel.delete()
-
-    if message.content.startswith("delete all channels"):
-        for channel in message.guild.text_channels:
-            text_channel_list.append(channel)
-
-        for channel in text_channel_list[:0] + text_channel_list[0 + 1:]:
-            await channel.delete()
 
 
 created_channels = []
