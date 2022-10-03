@@ -75,7 +75,7 @@ async def on_message(message):
                 players.update({msg.author.name: "undefined"})
 
             if already_joined_amount == 3:
-                await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
+                await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
 
         message.channel.send("Iedereen is gejoined!")
 
