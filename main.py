@@ -21,16 +21,20 @@ async def on_ready():
 
 
 main_channel = None
-joining = True
+joining = None
 players = {}
 i = 0
 already_joined_amount = 0
 roleNumbers = []
 playerNames = []
+rolesList = []
+message = None
 
 
 @client.event
 async def on_message(message):
+    message.content = message.content.lower
+
     if client.user == message.author:
         return
     if message.content.startswith("create channel") or message.content.startswith("Create channel"):
@@ -47,6 +51,7 @@ async def on_message(message):
         global i
         i += 1
         await channel.send("Stuur \"ik\" om mee te doen!")
+        joining = True
 
         global players
         global joining
@@ -78,7 +83,6 @@ async def on_message(message):
                 playerNames = list(players)
                 role_selector()
 
-
         await message.channel.send("Iedereen is gejoined!")
 
 
@@ -91,7 +95,6 @@ def role_selector():
              "Cupido": 1,
              "Het Onschuldige Meisje": 1}
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
-    rolesList = []
 
     global i
     i = 0
