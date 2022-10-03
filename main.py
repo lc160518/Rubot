@@ -81,7 +81,7 @@ async def on_message(message):
         message.channel.send("Iedereen is gejoined!")
         global playerNames
         playerNames = list(players)
-
+        role_selector()
 
 def role_selector():
     roles = {"Weerwolf": len(players) // 6,
