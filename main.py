@@ -22,10 +22,11 @@ async def on_ready():
 
 main_channel = None
 joining = True
-players = {}  # moet nog geleegd worden
+players = {}
 i = 0
 already_joined_amount = 0
 roleNumbers = []
+playerNames = []
 
 
 @client.event
@@ -44,46 +45,42 @@ async def on_message(message):
         await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
         await main_channel.send("Wie doet er mee met Weervolven?")
 
-    global joining
-
     if message.content.startswith("enable joining"):
         channel = message.channel
-        print(joining)
-
         global i
         i += 1
         await channel.send("Stuur \"ik\" om mee te doen!")
 
         global players
+        global joining
         global already_joined_amount
 
         while joining:
-
             def check(m):
                 return client.user != message.author \
-                       and m.content == "ik"\
-                       or m.content == "disable joining" \
-                       and m.channel == channel
+                       and m.content == "ik" \
+                       and m.channel == channel \
+                       and m.content != "disable joining"
 
             msg = await client.wait_for("message", check=check)
+            if message.content.startswith("disable joining"):
+                await message.channel.send(message.content)
+                break
 
-            if msg.author.name not in players and "ik" in msg.content:
+            if message.author.name not in players:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
-            elif message.author.name in players and "ik" in msg.content:
+            else:
                 await msg.channel.send("<@{.author.id}> already joined".format(msg))
                 already_joined_amount += 1
-            if msg.author.name not in players and "ik" in msg.content:
-                players.update({msg.author.name: "geen rol"})
+            if msg.author.name not in players:
+                players.update({msg.author.name: "undefined"})
 
             if already_joined_amount == 3:
                 await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
 
-            if "disable joining" in msg.content:
-                joining = False
-                print(joining)
-
-        await message.channel.send("Iedereen is gejoined!")
-        print(players)
+        message.channel.send("Iedereen is gejoined!")
+        global playerNames
+        playerNames = list(players)
 
 
 def role_selector():
@@ -95,46 +92,48 @@ def role_selector():
              "Cupido": 1,
              "Het Onschuldige Meisje": 1}
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
-    rolesL = []
+    rolesList = []
 
     global i
     i = 0
     while i != int(roles["Weerwolf"]):
-        rolesL.append("Weerwolf")
+        rolesList.append("Weerwolf")
         i += 1
     i = 0
     while i != int(roles["Burger"]):
-        rolesL.append("Burger")
+        rolesList.append("Burger")
         i += 1
     i = 0
     while i != int(roles["Ziener"]):
-        rolesL.append("Ziener")
+        rolesList.append("Ziener")
         i += 1
     i = 0
     while i != int(roles["Heks"]):
-        rolesL.append("Heks")
+        rolesList.append("Heks")
         i += 1
     i = 0
     while i != int(roles["Jager"]):
-        rolesL.append("Jager")
+        rolesList.append("Jager")
         i += 1
     i = 0
     while i != int(roles["Cupido"]):
-        rolesL.append("Cupido")
+        rolesList.append("Cupido")
         i += 1
     i = 0
     while i != int(roles["Het Onschuldige Meisje"]):
-        rolesL.append("Het Onschuldige Meisje")
+        rolesList.append("Het Onschuldige Meisje")
         i += 1
     i = 0
     for i in range(0, len(players)):
         roleNumbers.append(i)
+
     for i in range(0, len(players)):
-        playerNumber = random.choice(roleNumbers)
-        roleNumbers.remove(playerNumber)
-        print(playerNumber)
-    print(roleNumbers)
-    print(rolesL)
+        roleNumber = random.choice(roleNumbers)
+        roleNumbers.remove(roleNumber)
+        roleReceiver = playerNames[i]
+        players[roleReceiver] = rolesList[roleNumber]
+    print(players)
+    print(players['a'])
 
 
 client.run(TOKEN)
