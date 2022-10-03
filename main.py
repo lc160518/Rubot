@@ -22,7 +22,7 @@ async def on_ready():
 
 main_channel = None
 joining = True
-players = ["Pedro", "Francois", "Among", "Us", "Hoe is het"] #moet nog geleegd worden
+players = {} #moet nog geleegd worden
 i = 0
 already_joined_amount = 0
 roleNumbers = []
@@ -71,8 +71,9 @@ async def on_message(message):
                 await msg.channel.send("<@{.author.id}> already joined".format(msg))
                 already_joined_amount += 1
             if msg.author.name not in players:
-                players.append(msg.author.name)
+                players.update({msg.author.name: "undefined"})
             print(players)
+            print(players[0])
 
             if already_joined_amount == 3:
                 await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
@@ -123,7 +124,9 @@ def role_selector():
     i = 0
     for i in range(0, len(players)):
         roleNumbers.append(i)
-
+    for i in range(0, len(players)):
+        playerNumber = random.choice(roleNumbers)
+        print(playerNumber)
     print(roleNumbers)
     print(rolesL)
 
