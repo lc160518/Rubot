@@ -23,17 +23,17 @@ async def on_ready():
 main_channel = None
 joining = None
 players = {}
-i = 0
-already_joined_amount = 0
 roleNumbers = []
 playerNames = []
 rolesList = []
-message = None
+already_joined_amount = 0
+i = 0
 
 
 @client.event
 async def on_message(message):
-    message.content = message.content.lower
+    message.content = message.content.lower()
+    global joining
 
     if client.user == message.author:
         return
@@ -54,7 +54,7 @@ async def on_message(message):
         joining = True
 
         global players
-        global joining
+
         global already_joined_amount
 
         while joining:
