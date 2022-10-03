@@ -58,19 +58,21 @@ async def on_message(message):
         global already_joined_amount
 
         while joining:
+
             def check(m):
                 return client.user != message.author \
-                       and m.content == "ik" \
-                       and m.channel == channel \
+                       and m.content == "ik"\
+                       or m.content == "disable joining" \
+                       and m.channel == channel
 
             msg = await client.wait_for("message", check=check)
 
-            if message.author.name not in players:
+            if msg.author.name not in players and "ik" in msg.content:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
-            else:
+            elif message.author.name in players and "ik" in msg.content:
                 await msg.channel.send("<@{.author.id}> already joined".format(msg))
                 already_joined_amount += 1
-            if msg.author.name not in players:
+            if msg.author.name not in players and "ik" in msg.content:
                 players.update({msg.author.name: "geen rol"})
 
             if already_joined_amount == 3:
