@@ -77,11 +77,12 @@ async def on_message(message):
 
             if msg.content.startswith("disable joining"):
                 joining = False
+                global playerNames
+                playerNames = list(players)
+                role_selector()
 
-        message.channel.send("Iedereen is gejoined!")
-        global playerNames
-        playerNames = list(players)
-        role_selector()
+
+        await message.channel.send("Iedereen is gejoined!")
 
 
 def role_selector():
@@ -134,7 +135,6 @@ def role_selector():
         roleReceiver = playerNames[i]
         players[roleReceiver] = rolesList[roleNumber]
     print(players)
-    print(players['a'])
 
 
 client.run(TOKEN)
