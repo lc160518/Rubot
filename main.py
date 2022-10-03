@@ -36,9 +36,6 @@ async def on_message(message):
     if message.content.startswith("create channel") or message.content.startswith("Create channel"):
         await message.guild.create_text_channel(name="monkey", reason="test")
 
-    if message.content.startswith("a"):
-        role_selector()
-
     if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
         global main_channel
         main_channel = client.get_channel(message.channel.id)
