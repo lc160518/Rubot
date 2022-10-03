@@ -119,7 +119,7 @@ async def on_message(message):
 
 created_channels = []
 possible_channels = ["weerwolfChannel", "burgerChannel", "zienerChannel", "heksChannel", "jagerChannel",
-                     "cupidoChannel", "meisjeChannel", "doodChannel", "loverschannel"]
+                     "cupidoChannel", "meisjeChannel", "doodChannel"]
 
 
 #        weerwolfChannel
