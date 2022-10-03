@@ -33,11 +33,7 @@ i = 0
 @client.event
 async def on_message(message):
     message.content = message.content.lower()
-
     global joining
-    global players
-    global already_joined_amount
-    global i
 
     if client.user == message.author:
         return
@@ -52,9 +48,14 @@ async def on_message(message):
 
     if message.content.startswith("enable joining"):
         channel = message.channel
+        global i
         i += 1
         await channel.send("Stuur \"ik\" om mee te doen!")
         joining = True
+
+        global players
+
+        global already_joined_amount
 
         while joining:
             def check(m):
@@ -95,6 +96,7 @@ def role_selector():
              "Het Onschuldige Meisje": 1}
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
 
+    # maakt een lijst met de rollen en hoevaak ze er zijn
     global i
     i = 0
     while i != int(roles["Weerwolf"]):
