@@ -67,7 +67,7 @@ async def on_message(message):
                 await message.channel.send(message.content)
                 break
 
-            if message.author.name not in players:
+            if msg.author.name not in players:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
             else:
                 await msg.channel.send("<@{.author.id}> already joined".format(msg))
