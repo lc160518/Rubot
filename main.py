@@ -42,8 +42,6 @@ async def on_message(message):
 
     if client.user == message.author:
         return
-    if message.content.startswith("create channel") or message.content.startswith("Create channel"):
-        await message.guild.create_text_channel(name="monkey", reason="test")
 
     if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
         global main_channel
@@ -89,6 +87,33 @@ async def on_message(message):
                 role_selector()
 
         await message.channel.send("Iedereen is gejoined!")
+
+    if message.content.startswith("create channels"):
+        for e in range(0, len(possible_channels)):
+            await message.guild.create_text_channel(name=possible_channels[e], reason="test")
+            created_channels.append(possible_channels[e])
+            e += 1
+
+    text_channel_list = []
+    if message.content.startswith("delete channels"):
+        for channel in message.guild.text_channels:
+            text_channel_list.append(channel)
+            if channel.name in created_channels:
+                channel.guild.delete()
+
+created_channels = []
+possible_channels = ["weerwolfChannel", "burgerChannel", "zienerChannel", "heksChannel", "jagerChannel",
+                     "cupidoChannel", "meisjeChannel", "doodChannel"]
+
+
+#        weerwolfChannel
+#       burgerChannel
+#      zienerChannel
+#     heksChannel
+#    jagerChannel
+#   cupidoChannel
+#  meisjeChannel
+# doodChannel
 
 
 def role_selector():
