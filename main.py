@@ -32,7 +32,6 @@ async def on_message(message):
         return
     if message.content.startswith("create channel") or message.content.startswith("Create channel"):
         await message.guild.create_text_channel(name="monkey", reason="test")
-        await message.guild.create_role()
 
     if message.content.startswith("a"):
         role_selector()
@@ -54,12 +53,16 @@ async def on_message(message):
         global already_joined_amount
 
         while joining:
-
             def check(m):
                 return client.user != message.author \
                        and m.content == "ik" \
+                       and m.channel == channel \
+                       and m.content != "disable joining"
 
             msg = await client.wait_for("message", check=check)
+            if message.content.startswith("disable joining"):
+                await message.channel.send(message.content)
+                break
 
             if message.author.name not in players:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
@@ -69,28 +72,57 @@ async def on_message(message):
             if msg.author.name not in players:
                 players.append(msg.author.name)
             print(players)
-            if already_joined_amount == 2:
-                await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
 
-            stop_msg = await client.wait_for("message", check=(msg.content == "disable joining"))
-            if stop_msg.content == "disable joining":
-                joining = False
+            if already_joined_amount == 3:
+                await msg.channel.send("STOP MET JOINEN, JE ZIT ER IN!!111!!")
 
         message.channel.send("Iedereen is gejoined!")
 
 
+print("monkey")
+
+
 def role_selector():
-    roles = {"Weerwolf": already_joined_amount // 6,
+    roles = {"Weerwolf": len(players) // 6,
              "Burger": 1,
              "Ziener": 1,
              "Heks": 1,
              "Jager": 1,
              "Cupido": 1,
-             "Het Onschuldige meisje": 1,
-             "Dief": 1}
-    if already_joined_amount == len(roles) - 1:
-        roles["Dief"] = 0
-    roles["Burger"] = already_joined_amount - roles["Weerwolf"] - (len(roles) - 2)
+             "Het Onschuldige Meisje": 1}
+    roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
+    rolesL = []
+
+    global i
+    i = 0
+    while i != int(roles["Weerwolf"]):
+        rolesL.append("Weerwolf")
+        i += 1
+    i = 0
+    while i != int(roles["Burger"]):
+        rolesL.append("Burger")
+        i += 1
+    i = 0
+    while i != int(roles["Ziener"]):
+        rolesL.append("Ziener")
+        i += 1
+    i = 0
+    while i != int(roles["Heks"]):
+        rolesL.append("Heks")
+        i += 1
+    i = 0
+    while i != int(roles["Jager"]):
+        rolesL.append("Jager")
+        i += 1
+    i = 0
+    while i != int(roles["Cupido"]):
+        rolesL.append("Cupido")
+        i += 1
+    i = 0
+    while i != int(roles["Het Onschuldige Meisje"]):
+        rolesL.append("Het Onschuldige Meisje")
+        i += 1
+    i = 0
 
 
 client.run(TOKEN)
