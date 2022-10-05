@@ -29,7 +29,7 @@ playerNames = []
 rolesList = []
 already_joined_amount = 0
 i = 0
-ik_counter = 1
+ik_counter = 0
 
 
 @client.event
@@ -45,9 +45,7 @@ async def on_message(message):
     # if "https://giphy.com/" or "https://tenor.com/" in message.content:
     #    await message.delete()
 
-    print(message.author)
-
-    if message.content.startswith("start weervolven"):
+    if message.content.startswith("start weerwolven"):
         await startup(message)
 
     # deze start weervolven hier onder moet niet gebruikt worden, maar staat hier nog als voorbeeld.
@@ -125,23 +123,16 @@ created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
                      "jager_channel",
                      "cupido_channel", "meisje_channel", "dood_channel"]
+possible_roles = [
+    "weerwolf", "burger", "ziener", "heks", "jager", "cupido", "het onschuldige meisje", "burgemeester"]
+possible_integers = [0, 1, 2, 3, 4, 5, 6, 7]
+created_integers = None
 
 
-#        weerwolfChannel
-#       burgerChannel
-#      zienerChannel
-#     heksChannel
-#    jagerChannel
-#   cupidoChannel
-#  meisjeChannel
-# doodChannel
-
-
-async def startup(r):
-    for e in range(0, len(possible_channels)):
-        await r.guild.create_text_channel(name=possible_channels[e], reason="test")
+async def startup(s):
+    for e in range(len(possible_channels)):
+        await s.guild.create_text_channel(name=possible_channels[e], reason="test")
         created_channels.append(possible_channels[e])
-        e += 1
 
 
 def role_selector():

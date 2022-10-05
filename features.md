@@ -2,13 +2,13 @@
 
 Setup
 - [ ] wanneer in channel maakt het een regels channel aan waar het alle regels uitlegd
-- [ ] start functie --> kijkt hoeveel mensen mee doen en vertelt welke rollen meedoen. (als tijd over kan speler de pool aanpassen)
-- [ ] maakt channels aan voor elke rol. En een dead chat
+- [X] start functie --> kijkt hoeveel mensen mee doen en vertelt welke rollen meedoen. (als tijd over kan speler de pool aanpassen)
+- [X] maakt channels aan voor elke rol. En een dead chat
 - [ ] maakt rollen aan voor elke rol. 
 - [ ] geeft iedereen "???" rollen. (toont aan dat onbekend is wat ze zijn).
 
 SpelCyclus
-- [ ] begint met een compelling story --> legt uit dat weerwolven aanwezig zijn en eind met "het wordt nacht in wakkerdam".
+- [X] begint met een compelling story --> legt uit dat weerwolven aanwezig zijn en eind met "het wordt nacht in wakkerdam".
 - [ ] roept op volgorde elke rol en wat ze willen doen. (zie vanaf r.)
 - [ ] "iedereen wordt wakker behalve @....".
 - [ ] speeches worden gegeven en burgemeester wordt gekozen. (enkel in ronde 1)
