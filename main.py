@@ -21,7 +21,6 @@ async def on_ready():
 
 
 running = False
-main_channel = None
 joining = None
 players = {}
 roleNumbers = []
@@ -30,6 +29,7 @@ rolesList = []
 already_joined_amount = 0
 i = 0
 ik_counter = 0
+testing = False
 
 
 @client.event
@@ -37,7 +37,6 @@ async def on_message(message):
     message.content = message.content.lower()
 
     global running
-    global joining
 
     if client.user == message.author:
         return
@@ -49,57 +48,12 @@ async def on_message(message):
         await startup(message)
 
     # deze start weervolven hier onder moet niet gebruikt worden, maar staat hier nog als voorbeeld.
-    if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
-        global main_channel
-        main_channel = client.get_channel(message.channel.id)
-        await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
-        await main_channel.send("Wie doet er mee met Weervolven?")
+    # if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
+    # global main_channel
+    # main_channel = client.get_channel(message.channel.id)
+    # await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
+    # await main_channel.send("Wie doet er mee met Weervolven?")
 
-    if message.content.startswith("enable joining"):
-        channel = message.channel
-        global i
-        i += 1
-        await channel.send("Stuur \"ik\" om mee te doen!")
-        joining = True
-
-        global players
-
-        global already_joined_amount
-
-        while joining:
-            def check(m):
-                return client.user != message.author \
-                       and m.content == "ik" \
-                       or m.content == "disable joining" \
-                       and m.channel == channel
-
-            msg = await client.wait_for("message", check=check)
-
-            global ik_counter
-
-            if msg.author not in players and "ik" in msg.content:
-                await msg.channel.send("<@{.author.id}> joined".format(msg))
-            elif message.author in players and "ik" in msg.content:
-                await msg.channel.send("<@{.author.id}> already joined".format(msg))
-                already_joined_amount += 1
-            if msg.author not in players and "ik" in msg.content:
-                players.update({msg.author: "geen rol"})
-                ik_counter += 1
-
-            if already_joined_amount == 3:
-                await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
-            ik_counter = 6
-            if msg.content.startswith("disable joining"):
-                joining = False
-                global playerNames
-                playerNames = list(players)
-                if ik_counter < 6:
-                    await msg.channel.send("Er zijn niet genoeg spelers!")
-                if ik_counter >= 6:
-                    await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
-                role_selector()
-
-        await message.channel.send("Iedereen is gejoined!")
     global created_channels
 
     if message.content.startswith(
@@ -110,8 +64,7 @@ async def on_message(message):
             e += 1
 
     text_channel_list = []
-    if message.content.startswith(
-            "delete channels") and message.author.id == 398769543482179585 or message.author.id == 627172201082388500:
+    if message.content.startswith("delete channels"):
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
         for channel in text_channel_list:
@@ -130,9 +83,58 @@ created_integers = None
 
 
 async def startup(s):
+    global i
+    global joining
+    global players
+    global already_joined_amount
+    global testing
+
     for e in range(len(possible_channels)):
         await s.guild.create_text_channel(name=possible_channels[e], reason="test")
         created_channels.append(possible_channels[e])
+
+    if s.content.startswith("testing"):
+        players = ["Yatzil", "Flannán", "Martial", "Rana", "Ramesh", "Andrej"]
+        testing = True
+
+    main_channel = channel in s.guild.text_channels
+    channel = s.channel
+    main_channel = created_channels[0]
+    await main_channel.send("Stuur \"ik\" om mee te doen!")
+    joining = True
+
+    while joining:
+        def check(m):
+            return client.user != s.author \
+                   and m.content == "ik" \
+                   or m.content == "disable joining" \
+                   and m.channel == channel
+
+        msg = await client.wait_for("message", check=check)
+
+        global ik_counter
+
+        if msg.author not in players and "ik" in msg.content:
+            await msg.channel.send("<@{.author.id}> joined".format(msg))
+        elif s.author in players and "ik" in msg.content:
+            await msg.channel.send("<@{.author.id}> already joined".format(msg))
+            already_joined_amount += 1
+        if msg.author not in players and "ik" in msg.content and not testing:
+            players.update({msg.author: "geen rol"})
+            ik_counter += 1
+
+        if already_joined_amount == 3:
+            await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
+        ik_counter = 6
+        if msg.content.startswith("disable joining"):
+            joining = False
+            global playerNames
+            playerNames = list(players)
+            if ik_counter < 6:
+                await msg.channel.send("Er zijn niet genoeg spelers!")
+            if ik_counter >= 6:
+                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
+            role_selector()
 
 
 def role_selector():
