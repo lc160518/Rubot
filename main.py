@@ -30,6 +30,7 @@ already_joined_amount = 0
 i = 0
 ik_counter = 1
 
+
 @client.event
 async def on_message(message):
     message.content = message.content.lower()
@@ -40,12 +41,9 @@ async def on_message(message):
     if client.user == message.author:
         return
 
-
-    await message.channel.send(message.content)
     if message.content.startswith("rubot stop") and message.author.id == "398769543482179585":
         await message.channel.send("eyo")
         quit()
-
 
     if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
         global main_channel
@@ -72,9 +70,9 @@ async def on_message(message):
                        and m.channel == channel
 
             msg = await client.wait_for("message", check=check)
-            
+
             global ik_counter
-            
+
             if msg.author not in players and "ik" in msg.content:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
             elif message.author in players and "ik" in msg.content:
@@ -96,7 +94,6 @@ async def on_message(message):
                 if ik_counter >= 6:
                     await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
                 role_selector()
-
 
         await message.channel.send("Iedereen is gejoined!")
     global created_channels
