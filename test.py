@@ -182,8 +182,10 @@ def role_selector():
 
     for i in range(0, len(players)):
         roleNumber = random.choice(roleNumbers)
+        print(roleNumber)
         roleNumbers.remove(roleNumber)
         roleReceiver = playerNames[i]
+        print(roleReceiver)
         players[roleReceiver] = rolesList[roleNumber]
     print(players)
 
