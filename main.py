@@ -20,6 +20,7 @@ async def on_ready():
     print(f'{client.user} im in')
 
 
+running = False
 main_channel = None
 joining = None
 players = {}
@@ -30,10 +31,11 @@ already_joined_amount = 0
 i = 0
 ik_counter = 1
 
-
 @client.event
 async def on_message(message):
     message.content = message.content.lower()
+
+    global running
     global joining
 
     msg_placeholder = message
@@ -41,10 +43,13 @@ async def on_message(message):
     if client.user == message.author:
         return
 
-    if message.content.startswith("rubot stop") and message.author.id == "398769543482179585":
-        await message.channel.send("eyo")
-        quit()
+    if "https://giphy.com/" or "https://tenor.com/" in message.content:
+        await message.delete()
 
+    if message.content.startswith("start weervolven"):
+        startup(message)
+
+    # deze start weervolven hier onder moet niet gebruikt worden maar staat hier nog als voorbeeld.
     if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
         global main_channel
         main_channel = client.get_channel(message.channel.id)
@@ -126,6 +131,13 @@ possible_channels = ["weerwolf_channel", "burger_channel", "ziener_channel", "he
 #   cupidoChannel
 #  meisjeChannel
 # doodChannel
+
+
+async def startup(r):
+    for e in range(0, len(possible_channels)):
+        await r.guild.create_text_channel(name=possible_channels[e], reason="test")
+        created_channels.append(possible_channels[e])
+        e += 1
 
 
 def role_selector():
