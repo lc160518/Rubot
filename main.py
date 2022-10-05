@@ -39,8 +39,6 @@ async def on_message(message):
     global running
     global joining
 
-    msg_placeholder = message
-
     if client.user == message.author:
         return
 
@@ -52,7 +50,7 @@ async def on_message(message):
     if message.content.startswith("start weervolven"):
         await startup(message)
 
-    # deze start weervolven hier onder moet niet gebruikt worden maar staat hier nog als voorbeeld.
+    # deze start weervolven hier onder moet niet gebruikt worden, maar staat hier nog als voorbeeld.
     if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
         global main_channel
         main_channel = client.get_channel(message.channel.id)
