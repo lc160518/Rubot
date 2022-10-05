@@ -31,6 +31,7 @@ already_joined_amount = 0
 i = 0
 ik_counter = 1
 
+
 @client.event
 async def on_message(message):
     message.content = message.content.lower()
@@ -43,11 +44,13 @@ async def on_message(message):
     if client.user == message.author:
         return
 
-    if "https://giphy.com/" or "https://tenor.com/" in message.content:
-        await message.delete()
+    # if "https://giphy.com/" or "https://tenor.com/" in message.content:
+    #    await message.delete()
+
+    print(message.author)
 
     if message.content.startswith("start weervolven"):
-        startup(message)
+        await startup(message)
 
     # deze start weervolven hier onder moet niet gebruikt worden maar staat hier nog als voorbeeld.
     if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
@@ -103,14 +106,16 @@ async def on_message(message):
         await message.channel.send("Iedereen is gejoined!")
     global created_channels
 
-    if message.content.startswith("create channels"):
+    if message.content.startswith(
+            "create channels") and message.author.id == 398769543482179585 or message.author.id == 627172201082388500:
         for e in range(0, len(possible_channels)):
             await message.guild.create_text_channel(name=possible_channels[e], reason="test")
             created_channels.append(possible_channels[e])
             e += 1
 
     text_channel_list = []
-    if message.content.startswith("delete channels"):
+    if message.content.startswith(
+            "delete channels") and message.author.id == 398769543482179585 or message.author.id == 627172201082388500:
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
         for channel in text_channel_list:
@@ -119,7 +124,8 @@ async def on_message(message):
 
 
 created_channels = []
-possible_channels = ["weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel", "jager_channel",
+possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
+                     "jager_channel",
                      "cupido_channel", "meisje_channel", "dood_channel"]
 
 
