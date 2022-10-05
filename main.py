@@ -75,13 +75,13 @@ async def on_message(message):
             
             global ik_counter
             
-            if msg.author.name not in players and "ik" in msg.content:
+            if msg.author not in players and "ik" in msg.content:
                 await msg.channel.send("<@{.author.id}> joined".format(msg))
-            elif message.author.name in players and "ik" in msg.content:
+            elif message.author in players and "ik" in msg.content:
                 await msg.channel.send("<@{.author.id}> already joined".format(msg))
                 already_joined_amount += 1
-            if msg.author.name not in players and "ik" in msg.content:
-                players.update({msg.author.name: "geen rol"})
+            if msg.author not in players and "ik" in msg.content:
+                players.update({msg.author: "geen rol"})
                 ik_counter += 1
 
             if already_joined_amount == 3:
