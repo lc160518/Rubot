@@ -94,7 +94,7 @@ async def startup(s):
     global players
     global already_joined_amount
 
-    for e in range(len(possible_channels)):
+    for e in range(0, len(possible_channels)):
         await s.guild.create_text_channel(name=possible_channels[e], reason="test")
         created_channels.append(possible_channels[e])
 
@@ -128,11 +128,11 @@ async def startup(s):
                 await msg.channel.send("Er zijn niet genoeg spelers!")
             if len(players) >= 6:
                 await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
-            role_selector(players)
+            role_selector()
 
 
 # Gives each player a role. Returns a dict
-def role_selector(players):
+def role_selector():
     rolesList = []
 
     roles = {"Weerwolf": len(players) // 6,
