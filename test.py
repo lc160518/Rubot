@@ -28,6 +28,7 @@ playerNames = []
 rolesList = []
 already_joined_amount = 0
 i = 0
+ik_counter = 0
 testing = False
 
 
@@ -94,7 +95,7 @@ async def startup(s):
     global players
     global already_joined_amount
 
-    for e in range(0, len(possible_channels)):
+    for e in range(len(possible_channels)):
         await s.guild.create_text_channel(name=possible_channels[e], reason="test")
         created_channels.append(possible_channels[e])
 
@@ -110,31 +111,32 @@ async def startup(s):
 
         msg = await client.wait_for("message", check=check)
 
+        global ik_counter
+
         if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> joined".format(msg))
         elif s.author in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> already joined".format(msg))
             already_joined_amount += 1
         if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
-            players.append(msg.author)
+            players.update({msg.author: "geen rol"})
+            ik_counter += 1
 
         if already_joined_amount == 3:
             await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
+            ik_counter = 6
         if msg.content.startswith("disable joining"):
             joining = False
             global playerNames
             playerNames = list(players)
-            if len(players) < 6:
+            if ik_counter < 6:
                 await msg.channel.send("Er zijn niet genoeg spelers!")
-            if len(players) >= 6:
+            if ik_counter >= 6:
                 await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
             role_selector()
 
 
-# Gives each player a role. Returns a dict
 def role_selector():
-    rolesList = []
-
     roles = {"Weerwolf": len(players) // 6,
              "Burger": 1,
              "Ziener": 1,
@@ -144,24 +146,48 @@ def role_selector():
              "Het Onschuldige Meisje": 1}
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
 
-    # maakt een lijst met de rollen en hoevaak ze er zijn
-
-    for role in roles:
-        for i in range((int(roles[role]))):
-            rolesList.append(role)
-
-    playerRoles = distribute_roles(players, rolesList)
-    print(playerRoles)
-
-
-# Distributes roles from rolesList to players
-def distribute_roles(players, rolesList):
-    playerNamesList = list(players)
+    # maakt een lijst met de rollen en hoe vaak ze er zijn
+    global i
+    i = 0
+    while i != int(roles["Weerwolf"]):
+        rolesList.append("Weerwolf")
+        i += 1
+    i = 0
+    while i != int(roles["Burger"]):
+        rolesList.append("Burger")
+        i += 1
+    i = 0
+    while i != int(roles["Ziener"]):
+        rolesList.append("Ziener")
+        i += 1
+    i = 0
+    while i != int(roles["Heks"]):
+        rolesList.append("Heks")
+        i += 1
+    i = 0
+    while i != int(roles["Jager"]):
+        rolesList.append("Jager")
+        i += 1
+    i = 0
+    while i != int(roles["Cupido"]):
+        rolesList.append("Cupido")
+        i += 1
+    i = 0
+    while i != int(roles["Het Onschuldige Meisje"]):
+        rolesList.append("Het Onschuldige Meisje")
+        i += 1
+    i = 0
     for i in range(0, len(players)):
-        rNumber = random.randrange(len(rolesList))
-        players[playerNamesList[i]] = rolesList[rNumber]
-        del rolesList[rNumber]
-    return players
+        roleNumbers.append(i)
+
+    for i in range(0, len(players)):
+        roleNumber = random.choice(roleNumbers)
+        print(roleNumber)
+        roleNumbers.remove(roleNumber)
+        roleReceiver = playerNames[i]
+        print(roleReceiver)
+        players[roleReceiver] = rolesList[roleNumber]
+    print(players)
 
 
 client.run(TOKEN)
