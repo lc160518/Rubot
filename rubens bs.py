@@ -2,12 +2,17 @@ if message.content.startswith("ik ben een vreselijk idioot persoon"):
     await pre_game(msg_placeholder)
 
 async def pre_game(x):
-    await x.channel.send("Het is nacht in Wakkerdam")
-    await x.channel.send("Iedereen gaat slapen")
-    await x.channel.send("Cupido wordt wakker en wijst twee liefjes aan")
-    await x.channel.send("Nadat Cupido zijn pijl in 2 personen hun anussen heeft gestoken gaat hij blij slapen.")
-    await x.channel.send(
-        "De twee geliefden schrikken wakker van de pijlen in hun kontjes en kijken elkaarl iefdevol aan")
+    await x.channel.send("Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
+                         "Elke nacht veranderen bepaalde bewoners van het gehucht in mensverslindende wolven, "
+                         "die afschuwelijke moorden plegen... Moorden, die het daglicht niet kunnen verdragen... "
+                         "Wat pas nog een eeuwenoude legende was, is plotseling op onverklaarbare wijze brute "
+                         "realiteit geworden! Jullie dorpelingen zullen je moeten verenigen om je van deze "
+                         "plaag te ontdoen, en zo te zorgen, dat minstens enkelen van jullie dit griezelige avontuur"
+                         " overleven!\n\nCupido wordt wakker en kiest twee geliefden")
+    while await player[s.author.name] != "Cupido":
+        await x.channel.send("")
+
+
     await x.channel.send("De geliefden kruipen bij elkaar in bed en gaan lekker slapen")
     await x.channel.send("De Ziener wordt wakker na een slecht voorgevoel in de buik")
     await x.channel.send("Zo paranoïa dat ie is, loopt hij naar zijn glazen bol en ziet hij 1 iemands ware zelf")
