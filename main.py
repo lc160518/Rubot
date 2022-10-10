@@ -58,6 +58,10 @@ async def on_message(message):
             if channel.name in created_channels:
                 await channel.delete()
 
+    crannel = discord.utils.get(message.guild.text_channels, name="gemera")
+    if message.content.startswith("monk") and message.channel == crannel:
+        await crannel.send("ey")
+
 
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
@@ -173,6 +177,7 @@ async def cupido(g):
     cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
     if done:
         await cupido_channel.send("eyo")
+
 
 
 client.run(TOKEN)
