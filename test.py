@@ -73,7 +73,6 @@ async def on_message(message):
             await message.guild.create_text_channel(name=possible_channels[e], reason="test")
             created_channels.append(possible_channels[e])
 
-
     text_channel_list = []
     if message.content.startswith("delete channels"):
         for channel in message.guild.text_channels:
@@ -173,11 +172,13 @@ def distribute_roles(players, rolesList):
         del rolesList[rNumber]
     return players
 
+
 async def cupido(g):
     global done
     cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
     if done:
         await cupido_channel.send("eyo")
+
 
 async def pre_game(x):
     await x.channel.send("Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
@@ -187,8 +188,6 @@ async def pre_game(x):
                          "realiteit geworden! Jullie dorpelingen zullen je moeten verenigen om je van deze "
                          "plaag te ontdoen, en zo te zorgen, dat minstens enkelen van jullie dit griezelige avontuur"
                          " overleven!")
-async def cupido(messag):
-    cupidoChannel = discord.utils.get(messag.guild.text_channels, name="cupido_channel")
-    await cupidoChannel.send("Stuur \"ik\" om mee te doen!")
+
 
 client.run(TOKEN)
