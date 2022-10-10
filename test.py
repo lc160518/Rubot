@@ -22,7 +22,7 @@ async def on_ready():
 
 running = False
 joining = None
-players = {}
+players ={}
 roleNumbers = []
 playerNames = []
 rolesList = []
@@ -44,9 +44,9 @@ async def on_message(message):
     #    await message.delete()
     if message.content.startswith("test weerwolven"):
         global testing
-        global players
+        global playersNames
 
-        players = ["Yatzil", "Flannán", "Martial", "Rana", "Ramesh", "Andrej"]
+        playersNames = ["Yatzil", "Flannán", "Martial", "Rana", "Ramesh", "Andrej"]
         testing = True
         await startup(message)
 
@@ -116,7 +116,7 @@ async def startup(s):
             await msg.channel.send("<@{.author.id}> already joined".format(msg))
             already_joined_amount += 1
         if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
-            players.append(msg.author)
+            players.update({msg.author: "geen rol"})
 
         if already_joined_amount == 3:
             await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
@@ -159,6 +159,8 @@ def distribute_roles(players, rolesList):
     playerNamesList = list(players)
     for i in range(0, len(players)):
         rNumber = random.randrange(len(rolesList))
+        print(rNumber)
+        print(players)
         players[playerNamesList[i]] = rolesList[rNumber]
         del rolesList[rNumber]
     return players
