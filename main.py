@@ -41,9 +41,6 @@ async def on_message(message):
     if client.user == message.author:
         return
 
-    if message.content.startswith("poep"):
-        await figuring_out()
-
     # if "https://giphy.com/" or "https://tenor.com/" in message.content:
     #    await message.delete()
     if message.content.startswith("test weerwolven"):
@@ -196,14 +193,6 @@ async def pre_game(message):
 
 async def cupido(message):
     await message.channel.send("Cupido wordt wakker en kiest twee geliefden")
-
-
-@client.event
-async def figuring_out(message):
-    if message.content.startswith("a"):
-        await message.channel.send("a")
-    if message.content.startswith("b"):
-        await message.channel.send("b")
 
 
 client.run(TOKEN)
