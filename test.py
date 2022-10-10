@@ -29,6 +29,7 @@ rolesList = []
 already_joined_amount = 0
 i = 0
 testing = False
+done = None
 
 
 @client.event
@@ -53,6 +54,8 @@ async def on_message(message):
     if message.content.startswith("start weerwolven"):
         await startup(message)
 
+    if done and message.content.startswith("cupido"):
+        await cupido(message)
     # deze start weervolven hier onder moet niet gebruikt worden, maar staat hier nog als voorbeeld.
     # if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
     # global main_channel
@@ -67,7 +70,7 @@ async def on_message(message):
         for e in range(0, len(possible_channels)):
             await message.guild.create_text_channel(name=possible_channels[e], reason="test")
             created_channels.append(possible_channels[e])
-            e += 1
+
 
     text_channel_list = []
     if message.content.startswith("delete channels"):
@@ -93,9 +96,10 @@ async def startup(s):
     global joining
     global players
     global already_joined_amount
+    global done
 
     for e in range(0, len(possible_channels)):
-        await s.guild.create_text_channel(name=possible_channels[e], reason="test")
+        await s.guild.create_text_channel(name=possible_channels[e], reason="startup")
         created_channels.append(possible_channels[e])
 
     main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
@@ -128,6 +132,8 @@ async def startup(s):
                 await msg.channel.send("Er zijn niet genoeg spelers!")
             if len(players) >= 6:
                 await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
+            done = True
+            print("Done")
             role_selector()
 
 
@@ -164,6 +170,12 @@ def distribute_roles(players, rolesList):
         players[playerNamesList[i]] = rolesList[rNumber]
         del rolesList[rNumber]
     return players
+
+async def cupido(g):
+    global done
+    cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
+    if done:
+        await cupido_channel.send("eyo")
 
 
 client.run(TOKEN)
