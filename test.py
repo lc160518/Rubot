@@ -133,9 +133,9 @@ async def startup(s):
                 await msg.channel.send("Er zijn niet genoeg spelers!")
             if len(players) >= 6:
                 await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
+            role_selector()
             done = True
             print("Done")
-            role_selector()
 
 
 # Gives each player a role. Returns a dict
