@@ -187,8 +187,5 @@ async def pre_game(x):
                          "realiteit geworden! Jullie dorpelingen zullen je moeten verenigen om je van deze "
                          "plaag te ontdoen, en zo te zorgen, dat minstens enkelen van jullie dit griezelige avontuur"
                          " overleven!")
-async def cupido(messag):
-    cupidoChannel = discord.utils.get(messag.guild.text_channels, name="cupido_channel")
-    await cupidoChannel.send("Stuur \"ik\" om mee te doen!")
 
 client.run(TOKEN)
