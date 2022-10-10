@@ -41,16 +41,6 @@ async def on_message(message):
     if client.user == message.author:
         return
 
-    # if "https://giphy.com/" or "https://tenor.com/" in message.content:
-    #    await message.delete()
-    if message.content.startswith("test weerwolven"):
-        global testing
-        global playersNames
-
-        playersNames = ["Yatzil", "Flannán", "Martial", "Rana", "Ramesh", "Andrej"]
-        testing = True
-        await startup(message)
-
     if message.content.startswith("start weerwolven"):
         await startup(message)
         await pre_game(message)
@@ -58,10 +48,10 @@ async def on_message(message):
 
     if done and message.content.startswith("cupido"):
         await cupido(message)
-    # deze start weervolven hier onder moet niet gebruikt worden, maar staat hier nog als voorbeeld.
-    # if message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
+    # Deze start weervolven hier onder moet niet gebruikt worden, maar staat hier nog als voorbeeld.
+    # If message.content.startswith("start Weervolven") or message.content.startswith("Start Weervolven"):
     # global main_channel
-    # main_channel = client.get_channel(message.channel.id)
+    # Main_channel = client.get_channel(message.channel.id)
     # await main_channel.send("In dit channel kan er nu Weervolven worden gespeeld!")
     # await main_channel.send("Wie doet er mee met Weervolven?")
 
@@ -138,8 +128,9 @@ async def startup(s):
             print("Done")
 
 
-# Gives each player a role. Returns a dict
+# Gives each player a role. Returns a dict.
 def role_selector():
+    global rolesList
     rolesList = []
 
     roles = {"Weerwolf": len(players) // 6,
@@ -151,10 +142,10 @@ def role_selector():
              "Het Onschuldige Meisje": 1}
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
 
-    # maakt een lijst met de rollen en hoevaak ze er zijn
+    # maakt een lijst met de rollen en hoe vaak ze er zijn
 
     for role in roles:
-        for i in range((int(roles[role]))):
+        for g in range((int(roles[role]))):
             rolesList.append(role)
 
     playerRoles = distribute_roles(players, rolesList)
@@ -162,15 +153,15 @@ def role_selector():
 
 
 # Distributes roles from rolesList to players
-def distribute_roles(players, rolesList):
-    playerNamesList = list(players)
-    for i in range(0, len(players)):
-        rNumber = random.randrange(len(rolesList))
+def distribute_roles(gamers, roles):
+    playerNamesList = list(gamers)
+    for j in range(0, len(gamers)):
+        rNumber = random.randrange(len(roles))
         print(rNumber)
-        print(players)
-        players[playerNamesList[i]] = rolesList[rNumber]
-        del rolesList[rNumber]
-    return players
+        print(gamers)
+        gamers[playerNamesList[i]] = roles[rNumber]
+        del roles[rNumber]
+    return gamers
 
 
 async def cupido(g):
@@ -188,5 +179,6 @@ async def pre_game(x):
                          "realiteit geworden! Jullie dorpelingen zullen je moeten verenigen om je van deze "
                          "plaag te ontdoen, en zo te zorgen, dat minstens enkelen van jullie dit griezelige avontuur"
                          " overleven!")
+
 
 client.run(TOKEN)
