@@ -22,7 +22,7 @@ async def on_ready():
 
 running = False
 joining = None
-players ={}
+players = {}
 roleNumbers = []
 playerNames = []
 rolesList = []
@@ -53,6 +53,8 @@ async def on_message(message):
 
     if message.content.startswith("start weerwolven"):
         await startup(message)
+        await pre_game(message)
+        await cupido(message)
 
     if done and message.content.startswith("cupido"):
         await cupido(message)
@@ -177,5 +179,16 @@ async def cupido(g):
     if done:
         await cupido_channel.send("eyo")
 
+async def pre_game(x):
+    await x.channel.send("Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
+                         "Elke nacht veranderen bepaalde bewoners van het gehucht in mensverslindende wolven, "
+                         "die afschuwelijke moorden plegen... Moorden, die het daglicht niet kunnen verdragen... "
+                         "Wat pas nog een eeuwenoude legende was, is plotseling op onverklaarbare wijze brute "
+                         "realiteit geworden! Jullie dorpelingen zullen je moeten verenigen om je van deze "
+                         "plaag te ontdoen, en zo te zorgen, dat minstens enkelen van jullie dit griezelige avontuur"
+                         " overleven!")
+async def cupido(messag):
+    cupidoChannel = discord.utils.get(messag.guild.text_channels, name="cupido_channel")
+    await cupidoChannel.send("Stuur \"ik\" om mee te doen!")
 
 client.run(TOKEN)
