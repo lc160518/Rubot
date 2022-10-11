@@ -62,6 +62,12 @@ async def on_message(message):
     if message.content.startswith("monk") and message.channel == crannel:
         await crannel.send("ey")
 
+    cupido_channel = discord.utils.get(message.guild.text_channels, name="cupido_channel")
+    if message.author not in players and message.content.startswith("cupicheck"):
+        await message.channel.send("eybro")
+    elif message.content.startswith("cupicheck") and message.channel == cupido_channel and "Cupido" == players[message.author]:
+        await message.channel.send("reee")
+
 
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
@@ -158,6 +164,7 @@ def distribute_roles(gamers, roles):
 
 
 async def role_giver():
+
     print("roles given")
 
 
@@ -177,6 +184,7 @@ async def cupido(g):
     cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
     if done:
         await cupido_channel.send("eyo")
+    players.update({g.author: "Cupido"})
 
 
 

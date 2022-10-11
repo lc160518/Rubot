@@ -142,14 +142,14 @@ async def startup(s):
 def role_selector():
     rolesList = []
 
-    roles = {"Weerwolf": len(players) // 6,
-             "Burger": 1,
-             "Ziener": 1,
-             "Heks": 1,
-             "Jager": 1,
-             "Cupido": 1,
-             "Het Onschuldige Meisje": 1}
-    roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
+    roles = {"weerwolf": len(players) // 6,
+             "burger": 1,
+             "ziener": 1,
+             "heks": 1,
+             "jager": 1,
+             "cupido": 1,
+             "het onschuldige meisje": 1}
+    roles["Burger"] = len(players) - roles["weerwolf"] - (len(roles) - 2)
 
     # maakt een lijst met de rollen en hoevaak ze er zijn
 
@@ -178,8 +178,8 @@ async def cupido(g):
     cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
     if done:
         await cupido_channel.send("eyo")
-
-
+    if g.content.startswith("abb") and g.channel == cupido_channel and "Cupido" == players[g.author.name]:
+        g.channel.send()
 async def pre_game(x):
     await x.channel.send("Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
                          "Elke nacht veranderen bepaalde bewoners van het gehucht in mensverslindende wolven, "
