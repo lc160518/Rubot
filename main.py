@@ -20,9 +20,9 @@ async def on_ready():
     print(f'{client.user} im in')
 
 
-running = False
 joining = None
-players = {}
+players = {}  # voor de dictiony
+spelers = []  # voor de permissions
 roleNumbers = []
 playerNames = []
 rolesList = []
@@ -35,15 +35,17 @@ done = None
 @client.event
 async def on_message(message):
     message.content = message.content.lower()
-
-    global running
+    global testing
 
     if client.user == message.author:
         return
 
     if message.content.startswith("start weerwolven"):
         await startup(message)
-        await cupido(message)
+
+    if message.content.startswith("start testing"):
+        testing = True
+        await startup(message)
 
     if done and message.content.startswith("cupido"):
         await cupido(message)
@@ -65,8 +67,13 @@ async def on_message(message):
     cupido_channel = discord.utils.get(message.guild.text_channels, name="cupido_channel")
     if message.author not in players and message.content.startswith("cupicheck"):
         await message.channel.send("eybro")
-    elif message.content.startswith("cupicheck") and message.channel == cupido_channel and "Cupido" == players[message.author]:
+    elif message.content.startswith("cupicheck") \
+            and message.channel == cupido_channel \
+            and "Cupido" == players[message.author]:
         await message.channel.send("reee")
+
+    if message.content.startswith("cuper"):
+        await cupido_permissies(message)
 
 
 created_channels = []
@@ -83,6 +90,7 @@ async def startup(s):
     global i
     global joining
     global players
+    global spelers
     global already_joined_amount
     global done
 
@@ -109,6 +117,11 @@ async def startup(s):
             already_joined_amount += 1
         if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
             players.update({msg.author: "geen rol"})
+            spelers.append(msg.author)
+
+        if msg.author not in players and "ik" in msg.content and testing and msg.channel == main_channel:
+            players.update({msg.author: "Cupido"})
+            spelers.append(msg.author)
 
         if already_joined_amount == 3:
             await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
@@ -156,15 +169,12 @@ def distribute_roles(gamers, roles):
     playerNamesList = list(gamers)
     for j in range(0, len(gamers)):
         rNumber = random.randrange(len(roles))
-        print(rNumber)
-        print(gamers)
         gamers[playerNamesList[i]] = roles[rNumber]
         del roles[rNumber]
     return gamers
 
 
 async def role_giver():
-
     print("roles given")
 
 
@@ -186,6 +196,16 @@ async def cupido(g):
         await cupido_channel.send("eyo")
     players.update({g.author: "Cupido"})
 
+
+async def cupido_permissies(r):
+    cupido_overrides = discord.PermissionOverwrite()
+    cupido_overrides.send_messages = False
+    cupido_overrides.read_messages = True
+    gemera_channel = discord.utils.get(r.guild.text_channels, name="gemera")
+
+    for j in range(0, len(spelers)):
+        cupido_member = {t for t in players if players[t] == "Cupido"}
+        await gemera_channel.set_permissions(cupido_member, overwrite=cupido_overrides)
 
 
 client.run(TOKEN)
