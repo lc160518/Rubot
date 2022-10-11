@@ -38,16 +38,6 @@ async def on_message(message):
 
     global running
 
-    if client.user == message.author:
-        return
-
-    if message.content.startswith("start weerwolven"):
-        await startup(message)
-        await cupido(message)
-
-    if done and message.content.startswith("cupido"):
-        await cupido(message)
-
     global created_channels
 
     text_channel_list = []
@@ -67,6 +57,16 @@ async def on_message(message):
         await message.channel.send("eybro")
     elif message.content.startswith("cupicheck") and message.channel == cupido_channel and "Cupido" == players[message.author]:
         await message.channel.send("reee")
+
+    if client.user == message.author:
+        return
+
+    if message.content.startswith("start weerwolven"):
+        await startup(message)
+        await cupido(message)
+
+    if done and message.content.startswith("cupido"):
+        await cupido(message)
 
 
 created_channels = []
@@ -137,7 +137,7 @@ def role_selector():
              "Ziener": 1,
              "Heks": 1,
              "Jager": 1,
-             "Cupido": 1,
+             "Cupido": 10,
              "Het Onschuldige Meisje": 1}
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
 
@@ -148,17 +148,15 @@ def role_selector():
             rolesList.append(role)
 
     playerRoles = distribute_roles(players, rolesList)
-    print(playerRoles)
 
 
 # Distributes roles from rolesList to players
 def distribute_roles(gamers, roles):
-    playerNamesList = list(gamers)
+    global playerNames
     for j in range(0, len(gamers)):
         rNumber = random.randrange(len(roles))
-        print(rNumber)
-        print(gamers)
-        gamers[playerNamesList[i]] = roles[rNumber]
+        gamers[playerNames[i]] = roles[rNumber]
+
         del roles[rNumber]
     return gamers
 
@@ -180,12 +178,19 @@ async def pre_game(r):
 
 
 async def cupido(g):
-    global done
-    cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
-    if done:
-        await cupido_channel.send("eyo")
-    players.update({g.author: "Cupido"})
 
+    msg2 = await client.wait_for("message")
+    cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
+    await cupido_channel.send("Cupido, welke personen wil jij aan elkaar koppelen?")
+    print(players[g.author])
+    if players[g.author] == "Cupido":
+        for b in range(len(players)):
+            print("hallo")
+            print(str(playerNames[b]))
+            if msg2.content.startswith(str(playerNames[b])):
+               print("----")
+            await cupido_channel.send("eyo")
+    players.update({g.author: "Cupido"})
 
 
 client.run(TOKEN)
