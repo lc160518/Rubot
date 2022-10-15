@@ -50,6 +50,25 @@ async def on_message(message):
     if done and message.content.startswith("cupido"):
         await cupido(message)
 
+    if message.content.startswith("dict"):
+        print(message.author)
+        str_list = {message.author: "Cupido"}
+
+        data = ["Cupido"]
+        for data_item in data:
+            for key, values in str_list.items():
+
+                # list data '4','1','5' are in string
+                # and dictonery value 4,1,5 are in integer form
+                # hence you need to compare the same data type
+                if values == str(data_item):
+                    print(key)
+
+    if message.content.startswith("monkal"):
+        print(message)
+        print(spelers)
+        print(players)
+
     global created_channels
 
     text_channel_list = []
@@ -134,7 +153,8 @@ async def startup(s):
             if len(players) >= 6:
                 await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
             break
-    role_selector()
+    if not testing:
+        role_selector()
     done = True
     print("Done")
     await pre_game(main_channel)
@@ -203,9 +223,24 @@ async def cupido_permissies(r):
     cupido_overrides.read_messages = True
     gemera_channel = discord.utils.get(r.guild.text_channels, name="gemera")
 
-    for j in range(0, len(spelers)):
-        cupido_member = {t for t in players if players[t] == "Cupido"}
-        await gemera_channel.set_permissions(cupido_member, overwrite=cupido_overrides)
+    for key, value in players.items():
+        print(key, ":", value)
+
+    for o in spelers:
+        print(spelers)
+        print(players)
+
+        for key, values in players.items():
+
+            # list data '4','1','5' are in string
+            # and dictonery value 4,1,5 are in integer form
+            # hence you need to compare the same data type
+            if values == o:
+                print(key)
+
+    # for j in range(0, len(spelers)):
+    #    cupido_member = {t for t in players if players[t] == "Cupido"}
+    #    await gemera_channel.set_permissions(cupido_member, overwrite=cupido_overrides)
 
 
 client.run(TOKEN)
