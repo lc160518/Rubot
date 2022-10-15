@@ -27,7 +27,6 @@ roleNumbers = []
 playerNames = []
 rolesList = []
 already_joined_amount = 0
-i = 0
 testing = False
 done = None
 
@@ -43,34 +42,7 @@ async def on_message(message):
     if message.content.startswith("start weerwolven"):
         await startup(message)
 
-    if message.content.startswith("start testing"):
-        testing = True
-        await startup(message)
-
-    if done and message.content.startswith("cupido"):
-        await cupido(message)
-
-    if message.content.startswith("dict"):
-        print(message.author)
-        str_list = {message.author: "Cupido"}
-
-        data = ["Cupido"]
-        for data_item in data:
-            for key, values in str_list.items():
-
-                # list data '4','1','5' are in string
-                # and dictonery value 4,1,5 are in integer form
-                # hence you need to compare the same data type
-                if values == str(data_item):
-                    print(key)
-
-    if message.content.startswith("monkal"):
-        print(message)
-        print(spelers)
-        print(players)
-
     global created_channels
-
     text_channel_list = []
     if message.content.startswith("delete channels"):
         for channel in message.guild.text_channels:
@@ -79,45 +51,36 @@ async def on_message(message):
             if channel.name in created_channels:
                 await channel.delete()
 
-    crannel = discord.utils.get(message.guild.text_channels, name="gemera")
-    if message.content.startswith("monk") and message.channel == crannel:
-        await crannel.send("ey")
-
-    cupido_channel = discord.utils.get(message.guild.text_channels, name="cupido_channel")
-    if message.author not in players and message.content.startswith("cupicheck"):
-        await message.channel.send("eybro")
-    elif message.content.startswith("cupicheck") \
-            and message.channel == cupido_channel \
-            and "Cupido" == players[message.author]:
-        await message.channel.send("reee")
-
-    if message.content.startswith("cuper"):
-        await cupido_permissies(message)
+    if message.content.startswith("reveal"):
+        await permissies(message)
 
 
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
                      "jager_channel",
                      "cupido_channel", "meisje_channel", "dood_channel"]
-possible_roles = [
-    "weerwolf", "burger", "ziener", "heks", "jager", "cupido", "het onschuldige meisje", "burgemeester"]
-possible_integers = [0, 1, 2, 3, 4, 5, 6, 7]
-created_integers = None
 
 
 async def startup(s):
-    global i
     global joining
     global players
     global spelers
     global already_joined_amount
     global done
 
+    overwrites = {
+        s.guild.default_role: discord.PermissionOverwrite(view_channel=False)}
+
     for e in range(0, len(possible_channels)):
-        await s.guild.create_text_channel(name=possible_channels[e], reason="startup")
+        await s.guild.create_text_channel(name=possible_channels[e], reason="startup", overwrites=overwrites)
         created_channels.append(possible_channels[e])
 
     main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
+
+    main_over = discord.PermissionOverwrite()
+    main_over.view_channel = True
+
+    await main_channel.set_permissions(s.guild.default_role, overwrite=main_over)
     await main_channel.send("Stuur \"ik\" om mee te doen!")
     joining = True
 
@@ -131,23 +94,15 @@ async def startup(s):
 
         if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> joined".format(msg))
-        elif s.author in players and "ik" in msg.content and msg.channel == main_channel:
+        elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> already joined".format(msg))
-            already_joined_amount += 1
+
         if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
-            players.update({msg.author: "geen rol"})
-            spelers.append(msg.author)
+            players.update({msg.author.id: "geen rol"})
+            spelers.append(msg.author.id)
 
-        if msg.author not in players and "ik" in msg.content and testing and msg.channel == main_channel:
-            players.update({msg.author: "Cupido"})
-            spelers.append(msg.author)
-
-        if already_joined_amount == 3:
-            await msg.channel.send("STOP MET PROBEREN, JE ZIT ER IN!!111!!")
         if msg.content.startswith("disable joining"):
             joining = False
-            global playerNames
-            playerNames = list(players)
             if len(players) < 6:
                 await msg.channel.send("Er zijn niet genoeg spelers!")
             if len(players) >= 6:
@@ -162,7 +117,7 @@ async def startup(s):
 
 # Gives each player a role. Returns a dict.
 def role_selector():
-    global rolesList
+    print(players)
     rolesList = []
 
     roles = {"Weerwolf": len(players) // 6,
@@ -189,13 +144,9 @@ def distribute_roles(gamers, roles):
     playerNamesList = list(gamers)
     for j in range(0, len(gamers)):
         rNumber = random.randrange(len(roles))
-        gamers[playerNamesList[i]] = roles[rNumber]
+        gamers[playerNamesList[j]] = roles[rNumber]
         del roles[rNumber]
     return gamers
-
-
-async def role_giver():
-    print("roles given")
 
 
 async def pre_game(r):
@@ -209,38 +160,53 @@ async def pre_game(r):
         " overleven!")
 
 
-async def cupido(g):
-    global done
-    cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
-    if done:
-        await cupido_channel.send("eyo")
-    players.update({g.author: "Cupido"})
+async def permissies(r):
+    override = discord.PermissionOverwrite()
+    override.view_channel = True
 
+    for e in players:
+        if "Cupido" == players[e]:
+            await r.channel.send(f"<@{e}> is cupido")
+            cupido_channel = discord.utils.get(r.guild.text_channels, name="cupido_channel")
+            cupidor = await client.fetch_user(e)
+            await cupido_channel.set_permissions(cupidor, overwrite=override)
 
-async def cupido_permissies(r):
-    cupido_overrides = discord.PermissionOverwrite()
-    cupido_overrides.send_messages = False
-    cupido_overrides.read_messages = True
-    gemera_channel = discord.utils.get(r.guild.text_channels, name="gemera")
+        if "Weerwolf" == players[e]:
+            await r.channel.send(f"<@{e}> is weerwolv")
+            burger_channel = discord.utils.get(r.guild.text_channels, name="burger_channel")
+            burger = await client.fetch_user(e)
+            await burger_channel.set_permissions(burger, overwrite=override)
 
-    for key, value in players.items():
-        print(key, ":", value)
+        if "Burger" == players[e]:
+            await r.channel.send(f"<@{e}> is Burger")
+            burger_channel = discord.utils.get(r.guild.text_channels, name="burger_channel")
+            burger = await client.fetch_user(e)
+            await burger_channel.set_permissions(burger, overwrite=override)
 
-    for o in spelers:
-        print(spelers)
-        print(players)
+        if "Ziener" == players[e]:
+            await r.channel.send(f"<@{e}> is Ziener")
+            ziener_channel = discord.utils.get(r.guild.text_channels, name="ziener_channel")
+            ziener = await client.fetch_user(e)
+            await ziener_channel.set_permissions(ziener, overwrite=override)
 
-        for key, values in players.items():
+        if "Heks" == players[e]:
+            await r.channel.send(f"<@{e}> is Heks")
+            heks_channel = discord.utils.get(r.guild.text_channels, name="heks_channel")
+            heks = await client.fetch_user(e)
+            await heks_channel.set_permissions(heks, overwrite=override)
 
-            # list data '4','1','5' are in string
-            # and dictonery value 4,1,5 are in integer form
-            # hence you need to compare the same data type
-            if values == o:
-                print(key)
+        if "Jager" == players[e]:
+            await r.channel.send(f"<@{e}> is Jager")
+            jager_channel = discord.utils.get(r.guild.text_channels, name="jager_channel")
+            jager = await client.fetch_user(e)
+            await jager_channel.set_permissions(jager, overwrite=override)
 
-    # for j in range(0, len(spelers)):
-    #    cupido_member = {t for t in players if players[t] == "Cupido"}
-    #    await gemera_channel.set_permissions(cupido_member, overwrite=cupido_overrides)
+        if "Het Onschuldige Meisje" == players[e]:
+            await r.channel.send(f"<@{e}> is Het Onschuldige Meisje")
+
+            meisje_channel = discord.utils.get(r.guild.text_channels, name="meisje_channel")
+            meisje = await client.fetch_user(e)
+            await meisje_channel.set_permissions(meisje, overwrite=override)
 
 
 client.run(TOKEN)
