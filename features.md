@@ -4,8 +4,8 @@ Setup
 - [ ] wanneer in channel maakt het een regels channel aan waar het alle regels uitlegd
 - [X] start functie --> kijkt hoeveel mensen mee doen en vertelt welke rollen meedoen. (als tijd over kan speler de pool aanpassen)
 - [X] maakt channels aan voor elke rol. En een dead chat
-- [ ] maakt rollen aan voor elke rol. 
-- [ ] geeft iedereen "???" rollen. (toont aan dat onbekend is wat ze zijn).
+- [X] maakt permissions aan voor elke rol. 
+- [] geeft iedereen "???" rollen. (toont aan dat onbekend is wat ze zijn).
 
 SpelCyclus
 - [X] begint met een compelling story --> legt uit dat weerwolven aanwezig zijn en eind met "het wordt nacht in wakkerdam".
@@ -51,7 +51,4 @@ De heks:
 Burgemeester:
 - [ ] heeft 1,5 stem. (dus bij ties wint de stemmen met de burgemeester)
 - [ ] als burgemeester sterft kiest hij nieuwe.
-
-Julian 2's request:
-- [ ] een skill issue check in de bot hebben.
 
