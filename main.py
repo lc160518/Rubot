@@ -54,6 +54,10 @@ async def on_message(message):
     if message.content.startswith("reveal"):
         await permissies(message)
 
+    if message.content.startswith("meesa cupido"):
+        spelers.append(message.author.name.lower())
+        await cupido(message)
+
 
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
@@ -99,7 +103,7 @@ async def startup(s):
 
         if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
             players.update({msg.author.id: "geen rol"})
-            spelers.append(msg.author.id)
+            spelers.append(msg.author.name.lower())
 
         if msg.content.startswith("disable joining"):
             joining = False
@@ -147,6 +151,18 @@ def distribute_roles(gamers, roles):
         gamers[playerNamesList[j]] = roles[rNumber]
         del roles[rNumber]
     return gamers
+
+
+async def cupido(g):
+    def check(m):
+        return client.user != g.author \
+               and m.content.startswith("@")
+
+    msg = await client.wait_for("message", check=check)
+    if msg.content.startswith("@"):
+        for i in range(len(spelers)):
+            if spelers[i] in msg.content.lower():
+                print("MONLK")
 
 
 async def pre_game(r):
