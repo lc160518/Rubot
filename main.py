@@ -87,37 +87,43 @@ async def startup(s):
 
     await main_channel.set_permissions(s.guild.default_role, overwrite=main_over)
     await main_channel.send("Stuur \"ik\" om mee te doen!")
-    joining = True
 
-    while joining:
+    while len(players) < 25:
         def check(m):
             return client.user != s.author \
-                   and m.content == "ik" \
-                   or m.content == "disable joining"
+                   and m.content.startswith("ik") \
+                   or m.content.startswith("disable joining") \
+                   or m.content.startswith("force stop")
 
         msg = await client.wait_for("message", check=check)
 
-        if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
-            await msg.channel.send("<@{.author.id}> joined".format(msg))
-        elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
-            await msg.channel.send("<@{.author.id}> already joined".format(msg))
-
-        if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
+        if msg.author.id not in players and msg.content.startswith("ik") and msg.channel == main_channel:
             players.update({msg.author.id: "geen rol"})
             spelers.append(msg.author.name.lower())
+            await msg.channel.send("<@{.author.id}> joined".format(msg))
 
-        if msg.content.startswith("disable joining"):
-            joining = False
-            if len(players) < 6:
-                await msg.channel.send("Er zijn niet genoeg spelers!")
-            if len(players) >= 6:
-                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
+        if msg.author in players and "ik" in msg.content and msg.channel == main_channel:
+            await msg.channel.send("<@{.author.id}> already joined".format(msg))
+
+        if msg.content.startswith("disable joining") and len(players) < 6:
+            await msg.channel.send("Er zijn niet genoeg spelers, mensen kunnen nogsteeds joinen")
+
+        if msg.content.startswith("disable joining") and len(players) >= 6:
+            await msg.channel.send("Mensen kunnen niet meer joinen!")
             break
-    if not testing:
+
+        if msg.content.startswith("force stop"):
+            await msg.channel.send("Forced stopped joining")
+            await msg.channel.send(players)
+            force_stopped = True
+            break
+
+    if not force_stopped:
         role_selector()
-    done = True
-    print("Done")
-    await pre_game(main_channel)
+    if not force_stopped:
+        await pre_game(main_channel)
+    if not force_stopped:
+        print("Done")
 
 
 # Gives each player a role. Returns a dict.
@@ -154,19 +160,6 @@ def distribute_roles(gamers, roles):
     return gamers
 
 
-async def cupido(g):
-    global lovers
-    def check(m):
-        return client.user != g.author \
-               and m.content.startswith("@")
-
-    msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("@") and len(lovers) < 3:
-        for i in range(len(spelers)):
-            if spelers[i] in msg.content.lower():
-                lovers.append(spelers[i])
-
-
 async def pre_game(r):
     await r.send(
         "Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
@@ -191,9 +184,9 @@ async def permissies(r):
 
         if "Weerwolf" == players[e]:
             await r.channel.send(f"<@{e}> is weerwolv")
-            burger_channel = discord.utils.get(r.guild.text_channels, name="burger_channel")
-            burger = await client.fetch_user(e)
-            await burger_channel.set_permissions(burger, overwrite=override)
+            weerwolf_channel = discord.utils.get(r.guild.text_channels, name="weerwolf_channel")
+            weerwolf = await client.fetch_user(e)
+            await weerwolf_channel.set_permissions(weerwolf, overwrite=override)
 
         if "Burger" == players[e]:
             await r.channel.send(f"<@{e}> is Burger")
