@@ -30,6 +30,7 @@ lovers = []
 already_joined_amount = 0
 testing = False
 done = None
+cupidomessage = True
 
 
 @client.event
@@ -56,8 +57,11 @@ async def on_message(message):
         await permissies(message)
 
     if message.content.startswith("meesa cupido"):
-        spelers.append(message.author.name.lower())
-        await cupido(message)
+        players.update({message.author.id: "Cupido"})
+        players.update({398769543482179585: "Weerwolf"})
+        while len(lovers) < 2:
+            print("e")
+            await cupido(message)
 
 
 created_channels = []
@@ -87,43 +91,37 @@ async def startup(s):
 
     await main_channel.set_permissions(s.guild.default_role, overwrite=main_over)
     await main_channel.send("Stuur \"ik\" om mee te doen!")
+    joining = True
 
-    while len(players) < 25:
+    while joining:
         def check(m):
             return client.user != s.author \
-                   and m.content.startswith("ik") \
-                   or m.content.startswith("disable joining") \
-                   or m.content.startswith("force stop")
+                   and m.content == "ik" \
+                   or m.content == "disable joining"
 
         msg = await client.wait_for("message", check=check)
 
-        if msg.author.id not in players and msg.content.startswith("ik") and msg.channel == main_channel:
-            players.update({msg.author.id: "geen rol"})
-            spelers.append(msg.author.name.lower())
+        if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> joined".format(msg))
-
-        if msg.author in players and "ik" in msg.content and msg.channel == main_channel:
+        elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> already joined".format(msg))
 
-        if msg.content.startswith("disable joining") and len(players) < 6:
-            await msg.channel.send("Er zijn niet genoeg spelers, mensen kunnen nogsteeds joinen")
+        if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
+            players.update({msg.author.id: "geen rol"})
+            spelers.append(msg.author.name.lower())
 
-        if msg.content.startswith("disable joining") and len(players) >= 6:
-            await msg.channel.send("Mensen kunnen niet meer joinen!")
+        if msg.content.startswith("disable joining"):
+            joining = False
+            if len(players) < 6:
+                await msg.channel.send("Er zijn niet genoeg spelers!")
+            if len(players) >= 6:
+                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
             break
-
-        if msg.content.startswith("force stop"):
-            await msg.channel.send("Forced stopped joining")
-            await msg.channel.send(players)
-            force_stopped = True
-            break
-
-    if not force_stopped:
+    if not testing:
         role_selector()
-    if not force_stopped:
-        await pre_game(main_channel)
-    if not force_stopped:
-        print("Done")
+    done = True
+    print("Done")
+    await pre_game(main_channel)
 
 
 # Gives each player a role. Returns a dict.
@@ -160,6 +158,37 @@ def distribute_roles(gamers, roles):
     return gamers
 
 
+async def cupido(g):
+    global lovers
+    global cupidomessage
+    global players
+
+    playerIdList = list(players)
+
+    cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
+    if cupidomessage:
+        await cupido_channel.send("Cupido, wie wil jij koppelen?")
+        cupidomessage = False
+
+    def check(m):
+        return client.user != g.author \
+               and m.content.startswith("@")
+    msg = await client.wait_for("message", check=check)
+    if msg.content.startswith("@"):
+        for i in range(len(players)):
+            lover = await client.fetch_user(playerIdList[i])
+            if lover.name.lower() in msg.content.lower():
+                if lover.name.lower() not in lovers:
+                    lovers.append(lover.name.lower())
+                    print(lovers)
+                else:
+                    await cupido_channel.send("Narcisten zijn niet toegestaan")
+            else: print("ey")
+    if len(lovers) == 2:
+        await cupido_channel.send(f"{lovers[0]} en {lovers[1]} zijn nu elkaars geliefden.")
+
+
+
 async def pre_game(r):
     await r.send(
         "Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
@@ -184,9 +213,9 @@ async def permissies(r):
 
         if "Weerwolf" == players[e]:
             await r.channel.send(f"<@{e}> is weerwolv")
-            weerwolf_channel = discord.utils.get(r.guild.text_channels, name="weerwolf_channel")
-            weerwolf = await client.fetch_user(e)
-            await weerwolf_channel.set_permissions(weerwolf, overwrite=override)
+            burger_channel = discord.utils.get(r.guild.text_channels, name="burger_channel")
+            burger = await client.fetch_user(e)
+            await burger_channel.set_permissions(burger, overwrite=override)
 
         if "Burger" == players[e]:
             await r.channel.send(f"<@{e}> is Burger")
