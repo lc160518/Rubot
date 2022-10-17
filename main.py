@@ -26,6 +26,7 @@ spelers = []  # voor de permissions
 roleNumbers = []
 playerNames = []
 rolesList = []
+lovers = []
 already_joined_amount = 0
 testing = False
 done = None
@@ -154,15 +155,16 @@ def distribute_roles(gamers, roles):
 
 
 async def cupido(g):
+    global lovers
     def check(m):
         return client.user != g.author \
                and m.content.startswith("@")
 
     msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("@"):
+    if msg.content.startswith("@") and len(lovers) < 3:
         for i in range(len(spelers)):
             if spelers[i] in msg.content.lower():
-                print("MONLK")
+                lovers.append(spelers[i])
 
 
 async def pre_game(r):
