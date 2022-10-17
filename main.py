@@ -58,12 +58,10 @@ async def on_message(message):
 
     if message.content.startswith("meesa cupido"):
         players.update({message.author.id: "Cupido"})
-        spelers.append(message.author.name.lower())
-        spelers.append("peter")
-        spelers.append("willem")
+        players.update({398769543482179585: "Weerwolf"})
         while len(lovers) < 2:
+            print("e")
             await cupido(message)
-
 
 
 created_channels = []
@@ -163,25 +161,33 @@ def distribute_roles(gamers, roles):
 async def cupido(g):
     global lovers
     global cupidomessage
+    global players
+
+    playerIdList = list(players)
+
     cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
     if cupidomessage:
         await cupido_channel.send("Cupido, wie wil jij koppelen?")
         cupidomessage = False
+
     def check(m):
         return client.user != g.author \
                and m.content.startswith("@")
-
     msg = await client.wait_for("message", check=check)
     if msg.content.startswith("@"):
-        for i in range(len(spelers)):
-            if spelers[i] in msg.content.lower():
-                if spelers[i] not in lovers:
-                    lovers.append(spelers[i])
+        for i in range(len(players)):
+            lover = await client.fetch_user(playerIdList[i])
+            if lover.name.lower() in msg.content.lower():
+                if lover.name.lower() not in lovers:
+                    lovers.append(lover.name.lower())
                     print(lovers)
                 else:
                     await cupido_channel.send("Narcisten zijn niet toegestaan")
+            else: print("ey")
     if len(lovers) == 2:
         await cupido_channel.send(f"{lovers[0]} en {lovers[1]} zijn nu elkaars geliefden.")
+
+
 
 async def pre_game(r):
     await r.send(
