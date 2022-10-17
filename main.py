@@ -30,6 +30,7 @@ lovers = []
 already_joined_amount = 0
 testing = False
 done = None
+cupidomessage = True
 
 
 @client.event
@@ -56,8 +57,13 @@ async def on_message(message):
         await permissies(message)
 
     if message.content.startswith("meesa cupido"):
+        players.update({message.author.id: "Cupido"})
         spelers.append(message.author.name.lower())
-        await cupido(message)
+        spelers.append("peter")
+        spelers.append("willem")
+        while len(lovers) < 2:
+            await cupido(message)
+
 
 
 created_channels = []
@@ -156,16 +162,26 @@ def distribute_roles(gamers, roles):
 
 async def cupido(g):
     global lovers
+    global cupidomessage
+    cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
+    if cupidomessage:
+        await cupido_channel.send("Cupido, wie wil jij koppelen?")
+        cupidomessage = False
     def check(m):
         return client.user != g.author \
                and m.content.startswith("@")
 
     msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("@") and len(lovers) < 3:
+    if msg.content.startswith("@"):
         for i in range(len(spelers)):
             if spelers[i] in msg.content.lower():
-                lovers.append(spelers[i])
-
+                if spelers[i] not in lovers:
+                    lovers.append(spelers[i])
+                    print(lovers)
+                else:
+                    await cupido_channel.send("Narcisten zijn niet toegestaan")
+    if len(lovers) == 2:
+        await cupido_channel.send(f"{lovers[0]} en {lovers[1]} zijn nu elkaars geliefden.")
 
 async def pre_game(r):
     await r.send(
