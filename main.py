@@ -172,20 +172,21 @@ async def cupido(g):
 
     def check(m):
         return client.user != g.author \
-               and m.content.startswith("@")
+               and m.content.startswith("!")
     msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("@"):
+    if msg.content.startswith("!"):
         for i in range(len(players)):
             lover = await client.fetch_user(playerIdList[i])
             if lover.name.lower() in msg.content.lower():
                 if lover.name.lower() not in lovers:
-                    lovers.append(lover.name.lower())
+                    lovers.append(lover)
                     print(lovers)
                 else:
                     await cupido_channel.send("Narcisten zijn niet toegestaan")
-            else: print("ey")
     if len(lovers) == 2:
-        await cupido_channel.send(f"{lovers[0]} en {lovers[1]} zijn nu elkaars geliefden.")
+        await cupido_channel.send(f"{lovers[0].name} en {lovers[1].name} zijn nu elkaars geliefden.")
+        lover1_dm = lovers[0].create_dm
+        await lover1_dm.send("e")
 
 
 
