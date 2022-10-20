@@ -170,6 +170,7 @@ async def cupido(g):
         await cupido_channel.send("Cupido, wie wil jij koppelen?")
         cupidomessage = False
 
+
     def check(m):
         return client.user != g.author \
                and m.content.startswith("!")
@@ -185,7 +186,7 @@ async def cupido(g):
                     await cupido_channel.send("Narcisten zijn niet toegestaan")
     if len(lovers) == 2:
         await cupido_channel.send(f"{lovers[0].name} en {lovers[1].name} zijn nu elkaars geliefden.")
-        lover1_dm = client.fetch_user(lovers[0]).create_dm
+        lover1_dm = lovers[0].create_dm()
         await lover1_dm.send("e")
 
 
