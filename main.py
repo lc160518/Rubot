@@ -124,6 +124,19 @@ async def startup(s):
     await pre_game(main_channel)
 
 
+async def dood(victim, r):
+    global players
+    all_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
+                    "jager_channel", "cupido_channel", "meisje_channel", "dood_channel"]
+    override = discord.PermissionOverwrite()
+    override.view_channel = True
+    players[victim] = "Dood"
+    for i in all_channels:
+        channel = discord.utils.get(r.guild.text_channels, name=all_channels[i])
+        victir = await client.fetch_user(victim)
+        await channel.set_permissions(victir, overwrite=override)
+
+
 # Gives each player a role. Returns a dict.
 def role_selector():
     print(players)
@@ -173,6 +186,7 @@ async def cupido(g):
     def check(m):
         return client.user != g.author \
                and m.content.startswith("!")
+
     msg = await client.wait_for("message", check=check)
     if msg.content.startswith("!"):
         for i in range(len(players)):
@@ -190,7 +204,6 @@ async def cupido(g):
         await lover1_dm.send(f"Jij en {lovers[1].name} zijn geliefden.")
         lover2_dm = await lovers[1].create_dm()
         await lover2_dm.send(f"Jij en {lovers[0].name} zijn geliefden.")
-
 
 
 async def pre_game(r):
