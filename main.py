@@ -91,9 +91,8 @@ async def startup(s):
 
     await main_channel.set_permissions(s.guild.default_role, overwrite=main_over)
     await main_channel.send("Stuur \"ik\" om mee te doen!")
-    joining = True
 
-    while joining:
+    while len(players) < 25:
         def check(m):
             return client.user != s.author \
                    and m.content == "ik" \
@@ -103,12 +102,14 @@ async def startup(s):
 
         if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> joined".format(msg))
-        elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
+            players.update({msg.author.id: "geen rol"})
+            spelers.append(msg.author.name.lower())
+
+        if msg.author in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send("<@{.author.id}> already joined".format(msg))
 
         if msg.author not in players and "ik" in msg.content and not testing and msg.channel == main_channel:
-            players.update({msg.author.id: "geen rol"})
-            spelers.append(msg.author.name.lower())
+
 
         if msg.content.startswith("disable joining"):
             joining = False
@@ -170,10 +171,10 @@ async def cupido(g):
         await cupido_channel.send("Cupido, wie wil jij koppelen?")
         cupidomessage = False
 
-
     def check(m):
         return client.user != g.author \
                and m.content.startswith("!")
+
     msg = await client.wait_for("message", check=check)
     if msg.content.startswith("!"):
         for i in range(len(players)):
@@ -188,7 +189,6 @@ async def cupido(g):
         await cupido_channel.send(f"{lovers[0].name} en {lovers[1].name} zijn nu elkaars geliefden.")
         lover1_dm = lovers[0].create_dm()
         await lover1_dm.send("e")
-
 
 
 async def pre_game(r):
