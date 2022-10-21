@@ -31,6 +31,7 @@ already_joined_amount = 0
 testing = False
 done = None
 cupidomessage = True
+zienermessage = True
 
 
 @client.event
@@ -57,11 +58,14 @@ async def on_message(message):
         await permissies(message)
 
     if message.content.startswith("meesa cupido"):
-        players.update({message.author.id: "Cupido"})
-        players.update({398769543482179585: "Weerwolf"})
         while len(lovers) < 2:
-            print("e")
             await cupido(message)
+
+    if message.content.startswith("fifafofum"):
+        print("a")
+        players.update({message.author.id: "Ziener"})
+        await ziener(message)
+
 
 
 created_channels = []
@@ -205,6 +209,31 @@ async def cupido(g):
         await lover1_dm.send(f"Jij en {lovers[1].name} zijn geliefden.")
         lover2_dm = await lovers[1].create_dm()
         await lover2_dm.send(f"Jij en {lovers[0].name} zijn geliefden.")
+
+
+async def ziener(e):
+    global players
+    global zienermessage
+
+    playerIdList = list(players)
+
+    ziener_channel = discord.utils.get(e.guild.text_channels, name="ziener_channel")
+    if zienermessage:
+        await ziener_channel.send("Wiens identiteit wil jij ontrafelen?")
+        zienermessage = False
+
+    def check(m):
+        return client.user != e.author \
+               and m.content.startswith("!")
+
+    msg = await client.wait_for("message", check=check)
+    if msg.content.startswith("!"):
+        for i in range(len(players)):
+            gepaparazzod = await client.fetch_user(playerIdList[i])
+            if gepaparazzod.name.lower() != msg.author.name.lower():
+                if gepaparazzod.name.lower() in msg.content.lower():
+                    print("oe")
+                    await ziener_channel.send(players[playerIdList[i]])
 
 
 async def pre_game(r):
