@@ -131,8 +131,9 @@ async def dood(victim, r):
     override = discord.PermissionOverwrite()
     override.view_channel = True
     players[victim] = "Dood"
-    for i in all_channels:
-        channel = discord.utils.get(r.guild.text_channels, name=all_channels[i])
+    for i in range(0, len(all_channels)):
+        name = all_channels[i]
+        channel = discord.utils.get(r.guild.text_channels, name=name)
         victir = await client.fetch_user(victim)
         await channel.set_permissions(victir, overwrite=override)
 
