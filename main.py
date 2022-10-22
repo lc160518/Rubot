@@ -32,12 +32,16 @@ testing = False
 done = None
 cupidomessage = True
 zienermessage = True
+ziener_done = False
 
 
 @client.event
 async def on_message(message):
     message.content = message.content.lower()
     global testing
+    global cupidomessage
+
+    ziener_channel = discord.utils.get(message.guild.text_channels, name="ziener_channel")
 
     if client.user == message.author:
         return
@@ -58,14 +62,20 @@ async def on_message(message):
         await permissies(message)
 
     if message.content.startswith("meesa cupido"):
+        cupidomessage = False
         while len(lovers) < 2:
             await cupido(message)
 
     if message.content.startswith("fifafofum"):
         print("a")
+        ziener_done = False
         players.update({message.author.id: "Ziener"})
-        await ziener(message)
-
+        players.update({398769543482179585: "Weerwolf"})
+        while not ziener_done:
+            print("---")
+            await ziener(message)
+            if not ziener_done:
+                await ziener_channel.send("Dat is geen speler.")
 
 
 created_channels = []
@@ -214,10 +224,11 @@ async def cupido(g):
 async def ziener(e):
     global players
     global zienermessage
+    global ziener_done
 
     playerIdList = list(players)
-
     ziener_channel = discord.utils.get(e.guild.text_channels, name="ziener_channel")
+
     if zienermessage:
         await ziener_channel.send("Wiens identiteit wil jij ontrafelen?")
         zienermessage = False
@@ -228,12 +239,14 @@ async def ziener(e):
 
     msg = await client.wait_for("message", check=check)
     if msg.content.startswith("!"):
-        for i in range(len(players)):
-            gepaparazzod = await client.fetch_user(playerIdList[i])
-            if gepaparazzod.name.lower() != msg.author.name.lower():
+        if msg.author.name.lower() in msg.content.lower():
+            await ziener_channel.send("Dat ben je zelf.")
+        else:
+            for i in range(len(players)):
+                gepaparazzod = await client.fetch_user(playerIdList[i])
                 if gepaparazzod.name.lower() in msg.content.lower():
-                    print("oe")
-                    await ziener_channel.send(players[playerIdList[i]])
+                    await ziener_channel.send(f"{gepaparazzod.name} is {players[playerIdList[i]]}!")
+                    ziener_done = True
 
 
 async def pre_game(r):
