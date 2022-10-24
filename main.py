@@ -33,6 +33,7 @@ done = None
 cupidomessage = True
 zienermessage = True
 ziener_done = False
+weerwolven = []
 
 
 @client.event
@@ -179,10 +180,17 @@ def role_selector():
 # Distributes roles from rolesList to players
 def distribute_roles(gamers, roles):
     playerNamesList = list(gamers)
+    global weerwolven
+
     for j in range(0, len(gamers)):
         rNumber = random.randrange(len(roles))
         gamers[playerNamesList[j]] = roles[rNumber]
         del roles[rNumber]
+
+    for e in players:
+        if "Weerwolf" == players[e]:
+            weerwolven.append(e)
+
     return gamers
 
 
@@ -247,6 +255,20 @@ async def ziener(e):
                 if gepaparazzod.name.lower() in msg.content.lower():
                     await ziener_channel.send(f"{gepaparazzod.name} is {players[playerIdList[i]]}!")
                     ziener_done = True
+
+
+async def weerwolf(j):
+    playerIdList = list(players)
+    weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
+
+    def check(m):
+        return client.user != j.author \
+               and m.content.startswith("!")
+
+    msg = await client.wait_for("message", check=check)
+    if msg.content.startswith("!"):
+        if msg.author.name.lower() in msg.content.lower():
+            await weerwolf_channel.send("zelfdoding is niet toegestaan")
 
 
 async def pre_game(r):
