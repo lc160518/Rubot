@@ -145,12 +145,13 @@ async def dood(victim, r):
                     "jager_channel", "cupido_channel", "meisje_channel", "dood_channel"]
     override = discord.PermissionOverwrite()
     override.view_channel = True
+    override.send_messages = False
     players[victim] = "Dood"
     for i in range(0, len(all_channels)):
         name = all_channels[i]
         channel = discord.utils.get(r.guild.text_channels, name=name)
-        victir = await client.fetch_user(victim)
-        await channel.set_permissions(victir, overwrite=override)
+        victor = await client.fetch_user(victim)
+        await channel.set_permissions(victor, overwrite=override)
 
 
 # Gives each player a role. Returns a dict.
@@ -187,9 +188,10 @@ def distribute_roles(gamers, roles):
         gamers[playerNamesList[j]] = roles[rNumber]
         del roles[rNumber]
 
-    for e in players:
-        if "Weerwolf" == players[e]:
-            weerwolven.append(e)
+    for i in players:
+        g = await client.fetch_user(i)
+        if "Weerwolf" == players[i]:
+            weerwolven.append(g.name)
 
     return gamers
 
@@ -258,7 +260,6 @@ async def ziener(e):
 
 
 async def weerwolf(j):
-    playerIdList = list(players)
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
 
     def check(m):
@@ -268,7 +269,13 @@ async def weerwolf(j):
     msg = await client.wait_for("message", check=check)
     if msg.content.startswith("!"):
         if msg.author.name.lower() in msg.content.lower():
-            await weerwolf_channel.send("zelfdoding is niet toegestaan")
+            await weerwolf_channel.send("Zelfdoding is niet toegestaan")
+        else:
+            for i in weerwolven:
+                y = client.fetch_user(weerwolven[i])
+                if y.name.lower() in msg.content.lower():
+                    await weerwolf_channel.send(f"{y.name} is gekozen")
+                    await dood(weerwolven[i], j)
 
 
 async def pre_game(r):
