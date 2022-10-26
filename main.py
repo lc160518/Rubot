@@ -34,6 +34,7 @@ cupidomessage = True
 zienermessage = True
 ziener_done = False
 weerwolven = []
+dag = None
 
 
 @client.event
@@ -66,6 +67,16 @@ async def on_message(message):
         cupidomessage = False
         while len(lovers) < 2:
             await cupido(message)
+
+    if message.content.startswith("weerwolvum activatus"):
+        players.update({398769543482179585: "Weerwolf"})
+        players.update({440892872867184640: "Weerwolf"})
+        players.update({627172201082388500: "Burger"})
+        testing = True
+        print(players)
+        await startup(message)
+        await permissies(message)
+        await weerwolf(message)
 
     if message.content.startswith("fifafofum"):
         print("a")
@@ -136,7 +147,8 @@ async def startup(s):
         role_selector()
     done = True
     print("Done")
-    await pre_game(main_channel)
+    if not testing:
+        await pre_game(main_channel)
 
 
 async def dood(victim, r):
@@ -179,7 +191,7 @@ def role_selector():
 
 
 # Distributes roles from rolesList to players
-def distribute_roles(gamers, roles):
+async def distribute_roles(gamers, roles):
     playerNamesList = list(gamers)
     global weerwolven
 
@@ -213,7 +225,7 @@ async def cupido(g):
                and m.content.startswith("!")
 
     msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("!"):
+    if msg.content.startswith("!") and msg.channel == cupido_channel:
         for i in range(len(players)):
             lover = await client.fetch_user(playerIdList[i])
             if lover.name.lower() in msg.content.lower():
@@ -248,7 +260,7 @@ async def ziener(e):
                and m.content.startswith("!")
 
     msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("!"):
+    if msg.content.startswith("!") and msg.channel == ziener_channel:
         if msg.author.name.lower() in msg.content.lower():
             await ziener_channel.send("Dat ben je zelf.")
         else:
@@ -261,21 +273,57 @@ async def ziener(e):
 
 async def weerwolf(j):
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
+    await weerwolf_channel.send(
+        "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben en geef dan hun naam met ![name]")
 
-    def check(m):
-        return client.user != j.author \
-               and m.content.startswith("!")
+    geweerwolved = False
 
-    msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("!"):
-        if msg.author.name.lower() in msg.content.lower():
-            await weerwolf_channel.send("Zelfdoding is niet toegestaan")
-        else:
-            for i in weerwolven:
-                y = client.fetch_user(weerwolven[i])
-                if y.name.lower() in msg.content.lower():
-                    await weerwolf_channel.send(f"{y.name} is gekozen")
-                    await dood(weerwolven[i], j)
+    while not geweerwolved:
+        def check(m):
+            return client.user != j.author \
+                   and m.content.startswith("!")
+
+        slachtoffers = []
+
+        msg = await client.wait_for("message", check=check)
+        if msg.content.startswith("!") and msg.channel == weerwolf_channel:
+            if msg.author.name.lower() in msg.content.lower():
+                await weerwolf_channel.send("Zelfdoding is niet toegestaan")
+            else:
+                for i in weerwolven:
+                    y = client.fetch_user(weerwolven[i])
+                    if y.name.lower() in msg.content.lower():
+                        await weerwolf_channel.send("Je kunt geen weerwolf vermoorden")
+
+            playerIdList = list(players)
+            for i in range(len(players)):
+                slachtoffer = await client.fetch_user(playerIdList[i])
+                if slachtoffer.name.lower() in msg.content.lower():
+                    if slachtoffer.name.lower() not in slachtoffers:
+                        slachtoffers.append(slachtoffer)
+                    await weerwolf_channel.send(f"{slachtoffer.name} is gekozen!")
+                    print(slachtoffer.name, " is dood")
+
+        if len(slachtoffers) == 2:
+            if slachtoffers[0] == slachtoffers[1]:
+                await weerwolf_channel.send(f"{slachtoffers[0]} wordt vermoord")
+                geweerwolved = True
+            else:
+                await weerwolf_channel.send("wordt het met elkaar eens...")
+                slachtoffers.clear()
+
+        if len(slachtoffers) == 3:
+            if slachtoffers[0] == slachtoffers[1] == slachtoffers[2]:
+                await weerwolf_channel.send(f"{slachtoffers[0]} wordt vermoord")
+                await dood(slachtoffers[0], j)
+                geweerwolved = True
+            else:
+                await weerwolf_channel.send("wordt het met elkaar eens...")
+                slachtoffers.clear()
+
+
+# weerwolf_channel.send(f"{y.name} is gekozen")
+# await dood(weerwolven[i], j)
 
 
 async def pre_game(r):
