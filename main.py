@@ -32,9 +32,12 @@ testing = False
 done = None
 cupidomessage = True
 zienermessage = True
+weerwolfmessage = True  # deze wordt nu niet gebruikt, maar ik wilde niets leeg laten voor heks
+heksmessage = True
 ziener_done = False
 weerwolven = []
 dag = None
+votes = []
 
 
 @client.event
@@ -225,7 +228,7 @@ async def cupido(g):
                and m.content.startswith("!")
 
     msg = await client.wait_for("message", check=check)
-    if msg.content.startswith("!") and msg.channel == cupido_channel:
+    if msg.channel == cupido_channel:
         for i in range(len(players)):
             lover = await client.fetch_user(playerIdList[i])
             if lover.name.lower() in msg.content.lower():
@@ -322,8 +325,103 @@ async def weerwolf(j):
                 slachtoffers.clear()
 
 
-# weerwolf_channel.send(f"{y.name} is gekozen")
-# await dood(weerwolven[i], j)
+async def weerwolf_slachtoffer(victim, u):
+    # dit is nodig voor \'t slachtoffer van weerwolf, staat nogniet in de functie
+    print("eyo")
+
+
+async def heks(b):
+    global players
+    global heksmessage
+
+    playerIdList = list(players)
+    heks_channel = discord.utils.get(b.guild.text_channels, name="heks_channel")
+
+    if heksmessage:
+        await heks_channel.send(
+            f"Hallo geniepige gemenerik, wil je liever --PLACEHOLDER WEERWOLF SLACHTOFFER-- redden,"
+            f" iemand anders ook te vermoorden of lekker rustig blijven genieten van het moment?")
+        await heks_channel.send(
+            "Gebruik eenmaal in het spel \"red\" om het weerwolf slachtoffer te redden."
+            " Gebruik eenmaal in het spel \"dood [naam]\" om het slachtoffer en nog een ander te vermoorden."
+            " Gebruik \"ik geniet\" om je beurt voorbij te laten gaan!")
+        heksmessage = False
+
+    def check(m):
+
+        return client.user != b.author \
+               or m.content.startswith("red") \
+               or m.content.startswith("dood") \
+               or m.content.startswith("ik geniet")
+
+    msg = await client.wait_for("message", check=check)
+    msg.content = msg.content.lower()
+
+    if msg.content.startswith("red"):
+        heks_channel.send("--WEERWOLF SLACHTOFFER PLACEHOLDER--, is gered!")
+        return
+
+    if msg.content.startswith("dood"):
+        heks_channel.send("--WEERWOLF slachtoffer PLACEHOLDER-- is gedood")
+        # dood(weerwolf_slachtoffer, b)
+        for i in range(len(players)):
+            lijk = await client.fetch_user(playerIdList[i])
+            if lijk.name.lower() in msg.content:
+                await heks_channel.send("")
+                await dood(lijk, b)
+
+    if msg.content.startswith("ik geniet"):
+        await heks_channel.send("Een goede keuze is gemaakt.")
+        # dood(weerwolf_slachtoffer, b)
+        return
+
+
+async def stemmen(q):
+    global players
+    main_channel = discord.utils.get(q.guild.text_channels, name="main_channel")
+    playerIdList = list(players)
+    global votes
+
+    def check(m):
+        return client.user != q.author \
+               and m.content.startswith("!")
+
+    def meest_gestemt(f):
+        counter = 0
+        num = f[0]
+        for g in f:
+            curr_frequency = f.count(g)
+            if curr_frequency > counter:
+                counter = curr_frequency
+                num = g
+        return num
+
+    msg = await client.wait_for("message", check=check)
+    msg.content = msg.content.lower()
+
+    if msg.content.startswith("!") and msg.channel == main_channel:
+        for i in range(len(players)):
+            vote = await client.fetch_user(playerIdList[i])
+            if vote.name.lower() in msg.content.lower:
+                if vote.name.lower() not in votes:
+                    votes.append(vote)
+
+    if len(players) == len(votes):
+        meest_gestemt(votes)
+        await main_channel.send(f"{meest_gestemt(votes).name} is het meest op gestemt")
+        await dood(meest_gestemt(votes), q)
+
+
+async def eerste_nacht(j):
+    await cupido(j)
+
+
+async def elke_nacht(k):
+    await ziener(k)
+    await weerwolf(k)
+    await heks(k)
+    # await reveal_dood(k)
+    await stemmen(k)
 
 
 async def pre_game(r):
