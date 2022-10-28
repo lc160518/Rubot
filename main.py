@@ -280,7 +280,7 @@ async def ziener(e):
 
 
 def slachtoffer():
-    slachtoffers = ["peter", "petra", "willem", "peter", "peter", "petra"]
+    slachtoffers = ["peter", "petra", "willem", "peter", "petra"]
     slachtoffers_dict = {}
     meeste_stemmen = 0
     tie = False
@@ -293,16 +293,21 @@ def slachtoffer():
         else:
             slachtoffers_dict.update({i: slachtoffers_dict[i] + 1})
     print(slachtoffers_dict)
+
     slachtofferz = list(slachtoffers_dict)
+
     for i in range(0, len(slachtoffers_dict)):
         print(slachtoffers_dict[slachtofferz[i]])
-        if slachtoffers_dict[slachtofferz[i]] > meeste_stemmen:
-            het_slachtoffer = slachtofferz[i]
-            meeste_stemmen = slachtoffers_dict[slachtofferz[i]]
 
         if slachtoffers_dict[slachtofferz[i]] == meeste_stemmen:
             tie_list.append(slachtofferz[i])
+            tie_list.append(het_slachtoffer)
             tie = True
+
+        if slachtoffers_dict[slachtofferz[i]] > meeste_stemmen:
+            print("A")
+            het_slachtoffer = slachtofferz[i]
+            meeste_stemmen = slachtoffers_dict[slachtofferz[i]]
 
     if tie == True:
         print(tie_list)
