@@ -33,6 +33,7 @@ done = None
 cupidomessage = True
 zienermessage = True
 weerwolfmessage = True  # deze wordt nu niet gebruikt, maar ik wilde niets leeg laten voor heks
+geweerwolved = False
 heksmessage = True
 ziener_done = False
 weerwolven = []
@@ -50,6 +51,9 @@ async def on_message(message):
 
     if client.user == message.author:
         return
+
+    if message.content.startswith("slachtoffers"):
+        slachtoffer()
 
     if message.content.startswith("start weerwolven"):
         await startup(message)
@@ -79,7 +83,8 @@ async def on_message(message):
         print(players)
         await startup(message)
         await permissies(message)
-        await weerwolf(message)
+        while not geweerwolved:
+            await weerwolf(message)
 
     if message.content.startswith("fifafofum"):
         print("a")
@@ -274,51 +279,86 @@ async def ziener(e):
                     ziener_done = True
 
 
+def slachtoffer():
+    slachtoffers = ["peter", "petra", "willem", "peter", "peter", "petra"]
+    slachtoffers_dict = {}
+    meeste_stemmen = 0
+    tie = False
+    tie_list = []
+    het_slachtoffer = None
+
+    for i in slachtoffers:
+        if i not in slachtoffers_dict:
+            slachtoffers_dict.update({i: 1})
+        else:
+            slachtoffers_dict.update({i: slachtoffers_dict[i] + 1})
+    print(slachtoffers_dict)
+    slachtofferz = list(slachtoffers_dict)
+    for i in range(0, len(slachtoffers_dict)):
+        print(slachtoffers_dict[slachtofferz[i]])
+        if slachtoffers_dict[slachtofferz[i]] > meeste_stemmen:
+            het_slachtoffer = slachtofferz[i]
+            meeste_stemmen = slachtoffers_dict[slachtofferz[i]]
+
+        if slachtoffers_dict[slachtofferz[i]] == meeste_stemmen:
+            tie_list.append(slachtofferz[i])
+            tie = True
+
+    if tie == True:
+        print(tie_list)
+        print("het is een tie")
+    else:
+        print(f"{het_slachtoffer} is vermoord!")
+
+
+
+
 async def weerwolf(j):
+    global weerwolfmessage
+    global geweerwolved
+
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
-    await weerwolf_channel.send(
-        "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben en geef dan hun naam met ![name]")
+    if not weerwolfmessage:
+        await weerwolf_channel.send(
+            "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben en geef dan hun naam met ![name]")
+        weerwolfmessage = True
 
-    geweerwolved = False
+    def check(m):
+        return client.user != j.author \
+               and m.content.startswith("!")
 
-    while not geweerwolved:
-        def check(m):
-            return client.user != j.author \
-                   and m.content.startswith("!")
+    slachtoffers = []
+    slachtoffers_dict = {}
 
-        slachtoffers = []
+    msg = await client.wait_for("message", check=check)
+    if msg.content.startswith("!") and msg.channel == weerwolf_channel:
+        for i in weerwolven:
+            y = client.fetch_user(weerwolven[i])
+            if y.name.lower() in msg.content.lower():
+                await weerwolf_channel.send("Je kunt geen weerwolf vermoorden")
+                return
 
-        msg = await client.wait_for("message", check=check)
-        if msg.content.startswith("!") and msg.channel == weerwolf_channel:
-            if msg.author.name.lower() in msg.content.lower():
-                await weerwolf_channel.send("Zelfdoding is niet toegestaan")
-            else:
-                for i in weerwolven:
-                    y = client.fetch_user(weerwolven[i])
-                    if y.name.lower() in msg.content.lower():
-                        await weerwolf_channel.send("Je kunt geen weerwolf vermoorden")
-
-            playerIdList = list(players)
-            for i in range(len(players)):
-                slachtoffer = await client.fetch_user(playerIdList[i])
-                if slachtoffer.name.lower() in msg.content.lower():
-                    if slachtoffer.name.lower() not in slachtoffers:
-                        slachtoffers.append(slachtoffer)
+        playerIdList = list(players)
+        for i in range(len(players)):
+            slachtoffer = await client.fetch_user(playerIdList[i])
+            if slachtoffer.name.lower() in msg.content.lower():
+                if slachtoffer.name.lower() not in slachtoffers:
+                    slachtoffers.append(slachtoffer)
                     await weerwolf_channel.send(f"{slachtoffer.name} is gekozen!")
-                    print(slachtoffer.name, " is dood")
+                    print(f"{slachtoffer.name} is dood")
 
-        if len(slachtoffers) == 2:
+        for i in slachtoffers:
+            if i not in slachtoffers_dict:
+                slachtoffers_dict.update({i: 1})
+            else:
+                slachtoffers_dict.update({i: slachtoffers_dict(i)+1})
+        print(slachtoffers_dict)
+
+
+
+        if len(slachtoffers):
             if slachtoffers[0] == slachtoffers[1]:
                 await weerwolf_channel.send(f"{slachtoffers[0]} wordt vermoord")
-                geweerwolved = True
-            else:
-                await weerwolf_channel.send("wordt het met elkaar eens...")
-                slachtoffers.clear()
-
-        if len(slachtoffers) == 3:
-            if slachtoffers[0] == slachtoffers[1] == slachtoffers[2]:
-                await weerwolf_channel.send(f"{slachtoffers[0]} wordt vermoord")
-                await dood(slachtoffers[0], j)
                 geweerwolved = True
             else:
                 await weerwolf_channel.send("wordt het met elkaar eens...")
