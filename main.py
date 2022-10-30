@@ -514,6 +514,10 @@ async def stemmen(q):
             else:
                 await main_channel.send(f"{lijk.name} is opgehangen!")
                 gestemd = True
+                votes_dict = {}
+                votes = []
+                alGestemd = []
+                meeste_stemmen = 0
 
 
 
