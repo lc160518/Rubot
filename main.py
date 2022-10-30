@@ -22,7 +22,6 @@ async def on_ready():
 
 joining = None
 players = {}  # voor de dictiony
-spelers = []  # voor de permissions
 roleNumbers = []
 playerNames = []
 rolesList = []
@@ -136,7 +135,6 @@ async def create_channels(s):
 async def playerjoining(s):
     global joining
     global players
-    global spelerNames
 
     main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
     await main_channel.send("Stuur \"ik\" om mee te doen!")
@@ -154,7 +152,6 @@ async def playerjoining(s):
         if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> is gejoined")
             players.update({msg.author.id: "geen rol"})
-            spelerNames.append(msg.author.name.lower())
 
         elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> already joined")
@@ -174,7 +171,7 @@ async def playerjoining(s):
 
 async def pre_game(r):
     await r.send(
-        "Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
+        "Het ingeslapen kakmonarchische dorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
         "Elke nacht veranderen bepaalde bewoners van het gehucht in mensverslindende wolven, "
         "die afschuwelijke moorden plegen... Moorden, die het daglicht niet kunnen verdragen... "
         "Wat pas nog een eeuwenoude legende was, is plotseling op onverklaarbare wijze brute "
@@ -366,12 +363,12 @@ async def weerwolf(j):
 
                 if slachtoffers_dict[slachtofferz[i]] == meeste_stemmen:
                     tie_list.append(slachtofferz[i])
-                    if het_slachtoffer != None and het_slachtoffer not in tie_list:
+                    if het_slachtoffer is not None and het_slachtoffer not in tie_list:
                         tie_list.append(het_slachtoffer)
                     tie = True
 
                 if slachtoffers_dict[slachtofferz[i]] > meeste_stemmen:
-                    if tie == True:
+                    if tie:
                         tie = False
                         tie_list = []
                     het_slachtoffer = slachtofferz[i]
@@ -574,6 +571,8 @@ async def dag(r):
         member = client.fetch_user(i)
         await main_channel.set_permissions(member, overwrite=None)
 
+    await dood(r)
+    # await burgermeester(r)
     await stemmen(r)
 
 
