@@ -36,13 +36,17 @@ weerwolfmessage = False
 geweerwolved = False
 heksmessage = True
 ziener_done = False
+gestemd = True
 weerwolven = []
 dag = None
 votes = []
+votes_dict = {}
 deathlist = []
 slachtoffers = []
 slachtoffers_dict = {}
 meeste_stemmen = 0
+alGestemd = []
+
 
 @client.event
 async def on_message(message):
@@ -64,6 +68,7 @@ async def on_message(message):
 
         weerwolven.append(125979540924268544)
         weerwolven.append(627172201082388500)
+        weerwolven.append(497826023707115522)
         weerwolven.append(497826023707115522)
 
         print(players)
@@ -293,11 +298,12 @@ async def weerwolf(j):
     global slachtoffers
     global slachtoffers_dict
     global meeste_stemmen
+    global alGestemd
 
+    het_slachtoffer = None
     tie = False
     tie_list = []
     tie_message = "Het is gelijkspel tussen"
-
 
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
     if not weerwolfmessage:
@@ -305,15 +311,11 @@ async def weerwolf(j):
             "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben en geef dan hun naam met ![name]")
         weerwolfmessage = True
 
-
     def check(m):
         return client.user != j.author \
                and m.content.startswith("!")
 
-
-
     playersIdList = list(players)
-    print(playersIdList)
 
     msg = await client.wait_for("message", check=check)
     if msg.content.startswith("!") and msg.channel == weerwolf_channel:
@@ -322,17 +324,17 @@ async def weerwolf(j):
             if y.name.lower() in msg.content.lower():
                 await weerwolf_channel.send("Je kunt geen weerwolf vermoorden")
                 return
-        for i in range(0, len(playersIdList)):
-            z = await client.fetch_user(playersIdList[i])
-            if z.name.lower() in msg.content.lower():
-                slachtoffers.append(z.name)
-                print("---")
-                print(slachtoffers)
-                print("---")
-                await weerwolf_channel.send(f"{msg.author.name} heeft op {z.name} gestemd")
-        print(slachtoffers)
-        print("------")
-        print(weerwolven)
+        if msg.author.name not in alGestemd:
+            for i in range(0, len(playersIdList)):
+                z = await client.fetch_user(playersIdList[i])
+                if z.name.lower() in msg.content.lower():
+                    slachtoffers.append(z)
+                    alGestemd.append(msg.author.name)
+                    await weerwolf_channel.send(f"{msg.author.name} heeft op {z.name} gestemd")
+        else:
+            await weerwolf_channel.send(f"{msg.author.name} je hebt al gestemd.")
+            return
+
         if len(slachtoffers) == len(weerwolven):
             for i in slachtoffers:
                 if i not in slachtoffers_dict:
@@ -348,25 +350,40 @@ async def weerwolf(j):
 
                 if slachtoffers_dict[slachtofferz[i]] == meeste_stemmen:
                     tie_list.append(slachtofferz[i])
-                    tie_list.append(het_slachtoffer)
+                    if het_slachtoffer != None and het_slachtoffer not in tie_list:
+                        tie_list.append(het_slachtoffer)
                     tie = True
 
                 if slachtoffers_dict[slachtofferz[i]] > meeste_stemmen:
-                    print("A")
+                    if tie == True:
+                        tie = False
+                        tie_list = []
                     het_slachtoffer = slachtofferz[i]
                     meeste_stemmen = slachtoffers_dict[slachtofferz[i]]
 
             if tie:
                 for i in range(0, len(tie_list)):
                     if i == len(tie_list) - 1:
-                        tie_message = tie_message + " & " + str(tie_list[i])
+                        tie_message = tie_message + " & " + str(tie_list[i]) + "."
                     elif i == 0:
                         tie_message = tie_message + " " + str(tie_list[i])
                     else:
                         tie_message = tie_message + ", " + str(tie_list[i])
                 await weerwolf_channel.send(tie_message)
+                await weerwolf_channel.send("stem opnieuw maar nu op dezelfde aub")
+                slachtoffers_dict = {}
+                slachtoffers = []
+                alGestemd = []
+                meeste_stemmen = 0
             else:
-                await weerwolf_channel.send(f"{het_slachtoffer} is vermoord!")
+                await weerwolf_channel.send(f"{het_slachtoffer.name} is vermoord!")
+                deathlist.append(het_slachtoffer)
+                print(deathlist)
+                geweerwolved = True
+                slachtoffers_dict = {}
+                slachtoffers = []
+                alGestemd = []
+                meeste_stemmen = 0
 
 
 async def heks(b):
@@ -420,35 +437,84 @@ async def stemmen(q):
     main_channel = discord.utils.get(q.guild.text_channels, name="main_channel")
     playerIdList = list(players)
     global votes
+    global votes_dict
+    global alGestemd
+    global meeste_stemmen
 
     def check(m):
         return client.user != q.author \
                and m.content.startswith("!")
 
-    def meest_gestemt(f):
-        counter = 0
-        num = f[0]
-        for g in f:
-            curr_frequency = f.count(g)
-            if curr_frequency > counter:
-                counter = curr_frequency
-                num = g
-        return num
-
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
 
-    if msg.content.startswith("!") and msg.channel == main_channel:
-        for i in range(len(players)):
-            vote = await client.fetch_user(playerIdList[i])
-            if vote.name.lower() in msg.content.lower:
-                if vote.name.lower() not in votes:
-                    votes.append(vote)
+    playersIdList = list(players)
 
-    if len(players) == len(votes):
-        meest_gestemt(votes)
-        await main_channel.send(f"{meest_gestemt(votes).name} is het meest op gestemt")
-        await dood(meest_gestemt(votes), q)
+    if msg.content.startswith("!") and msg.channel == main_channel:
+        for i in range(0, len(weerwolven)):
+            y = await client.fetch_user(weerwolven[i])
+            if y.name.lower() in msg.content.lower():
+                await main_channel.send("Je kunt geen weerwolf vermoorden")
+                return
+        if msg.author.name not in alGestemd:
+            for i in range(0, len(playersIdList)):
+                z = await client.fetch_user(playersIdList[i])
+                if z.name.lower() in msg.content.lower():
+                    votes.append(z)
+                    alGestemd.append(msg.author.name)
+                    await main_channel.send(f"{msg.author.name} heeft op {z.name} gestemd")
+        else:
+            await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
+            return
+
+        if len(votes) == len(weerwolven):
+            for i in votes:
+                if i not in votes_dict:
+                    votes_dict.update({i: 1})
+                else:
+                    votes_dict.update({i: votes_dict[i] + 1})
+            print(votes_dict)
+
+            votez = list(votes_dict)
+
+            for i in range(0, len(votes_dict)):
+                print(votes_dict[votez[i]])
+
+                if votes_dict[votez[i]] == meeste_stemmen:
+                    tie_list.append(votez[i])
+                    if het_slachtoffer != None and het_slachtoffer not in tie_list:
+                        tie_list.append(het_slachtoffer)
+                    tie = True
+
+                if votes_dict[votez[i]] > meeste_stemmen:
+                    if tie == True:
+                        tie = False
+                        tie_list = []
+                    het_slachtoffer = votez[i]
+                    meeste_stemmen = votes_dict[votez[i]]
+
+            if tie:
+                for i in range(0, len(tie_list)):
+                    if i == len(tie_list) - 1:
+                        tie_message = tie_message + " & " + str(tie_list[i]) + "."
+                    elif i == 0:
+                        tie_message = tie_message + " " + str(tie_list[i])
+                    else:
+                        tie_message = tie_message + ", " + str(tie_list[i])
+                await main_channel.send(tie_message)
+                await main_channel.send("stem opnieuw maar nu op dezelfde aub")
+                votes_dict = {}
+                votes = []
+                alGestemd = []
+                meeste_stemmen = 0
+            else:
+                await main_channel.send(f"{het_slachtoffer.name} is vermoord!")
+                deathlist.append(het_slachtoffer)
+                print(deathlist)
+                gestemd = True
+
+
+
 
 
 async def eerste_nacht(j):
