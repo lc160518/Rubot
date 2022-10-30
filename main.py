@@ -558,7 +558,7 @@ async def monarchvoting(k):
 
     if not monarch_message:
         await main_channel.send("Stem nu allemaal op je favoriete koning.")
-        monarchspeech_message = True
+        monarch_message = True
 
     def check(m):
         return client.user != k.author \
