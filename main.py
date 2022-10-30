@@ -30,13 +30,13 @@ lovers = []
 already_joined_amount = 0
 testing = False
 done = None
-cupidomessage = True
-zienermessage = True
+
+cupidomessage = False
+zienermessage = False
 weerwolfmessage = False
-geweerwolved = False
-heksmessage = True
-ziener_done = False
-gestemd = True
+heksmessage = False
+stemmessage = False
+
 weerwolven = []
 votes = []
 votes_dict = {}
@@ -48,6 +48,13 @@ alGestemd = []
 tie_message = "Het is gelijkspel tussen"
 tie = False
 tie_list = []
+
+cupido_done = False
+ziener_done = False
+weerwolf_done = False
+heks_done = False
+monarch_done = False
+stemmen_done = False
 
 
 @client.event
@@ -136,7 +143,6 @@ async def create_channels(s):
 async def playerjoining(s):
     global joining
     global players
-    global spelerNames
 
     main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
     await main_channel.send("Stuur \"ik\" om mee te doen!")
@@ -154,7 +160,6 @@ async def playerjoining(s):
         if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> is gejoined")
             players.update({msg.author.id: "geen rol"})
-            spelerNames.append(msg.author.name.lower())
 
         elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> already joined")
@@ -252,9 +257,9 @@ async def cupido(g):
     playerIdList = list(players)
 
     cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
-    if cupidomessage:
+    if not cupidomessage:
         await cupido_channel.send("Cupido, wie wil jij koppelen?")
-        cupidomessage = False
+        cupidomessage = True
 
     def check(m):
         return client.user != g.author \
@@ -287,9 +292,9 @@ async def ziener(e):
     playerIdList = list(players)
     ziener_channel = discord.utils.get(e.guild.text_channels, name="ziener_channel")
 
-    if zienermessage:
+    if not zienermessage:
         await ziener_channel.send("Wiens identiteit wil jij ontrafelen?")
-        zienermessage = False
+        zienermessage = True
 
     def check(m):
         return client.user != e.author \
@@ -309,7 +314,7 @@ async def ziener(e):
 
 async def weerwolf(j):
     global weerwolfmessage
-    global geweerwolved
+    global weerwolf_done
     global deathlist
     global weerwolven
     global slachtoffers
@@ -366,7 +371,7 @@ async def weerwolf(j):
 
                 if slachtoffers_dict[slachtofferz[i]] == meeste_stemmen:
                     tie_list.append(slachtofferz[i])
-                    if het_slachtoffer != None and het_slachtoffer not in tie_list:
+                    if het_slachtoffer is not None and het_slachtoffer not in tie_list:
                         tie_list.append(het_slachtoffer)
                     tie = True
 
@@ -395,7 +400,7 @@ async def weerwolf(j):
                 await weerwolf_channel.send(f"{het_slachtoffer.name} is vermoord!")
                 deathlist.append(het_slachtoffer)
                 print(deathlist)
-                geweerwolved = True
+                weerwolf_done = True
                 slachtoffers_dict = {}
                 slachtoffers = []
                 alGestemd = []
@@ -405,6 +410,7 @@ async def weerwolf(j):
 async def heks(b):
     global players
     global heksmessage
+    global heks_done
 
     playerIdList = list(players)
     heks_channel = discord.utils.get(b.guild.text_channels, name="heks_channel")
@@ -431,7 +437,7 @@ async def heks(b):
 
     if msg.content.startswith("red"):
         heks_channel.send(f"{deathlist[0].name} is gered!")
-        return
+        heks_done = True
 
     slachtoffer = deathlist[0]
 
@@ -442,10 +448,11 @@ async def heks(b):
             if lijk.name.lower() in msg.content:
                 await heks_channel.send("")
                 deathlist.append(lijk)
+        heks_done = True
 
     if msg.content.startswith("ik geniet"):
         await heks_channel.send("Een goede keuze is gemaakt.")
-        return
+        heks_done = True
 
 
 async def meisje(x):
@@ -455,7 +462,6 @@ async def meisje(x):
 
 async def stemmen(q):
     global players
-    global gestemd
     main_channel = discord.utils.get(q.guild.text_channels, name="main_channel")
     playerIdList = list(players)
     global votes
@@ -465,10 +471,8 @@ async def stemmen(q):
     global tie_message
     global tie
     global tie_list
-    global alivePlayers
     vermoord = None
-
-    await main_channel.send("Stem op iemand wie jij vermoedt een weerwolf te zijn.")
+    global stemmen_done
 
     def check(m):
         return client.user != q.author \
@@ -478,17 +482,23 @@ async def stemmen(q):
     msg.content = msg.content.lower()
 
     if msg.content.startswith("!") and msg.channel == main_channel:
+        for i in range(0, len(weerwolven)):
+            y = await client.fetch_user(weerwolven[i])
+            if y.name.lower() in msg.content.lower():
+                await main_channel.send("Je kunt geen weerwolf vermoorden")
+                return
         if msg.author.name not in alGestemd:
             for i in range(0, len(playerIdList)):
                 z = await client.fetch_user(playerIdList[i])
                 if z.name.lower() in msg.content.lower():
                     votes.append(z)
                     alGestemd.append(msg.author.name)
+                    await main_channel.send(f"{msg.author.name} heeft op {z.name} gestemd")
         else:
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
 
-        if len(votes) == len(alivePlayers):
+        if len(votes) == len(weerwolven):
             for i in votes:
                 if i not in votes_dict:
                     votes_dict.update({i: 1})
@@ -530,12 +540,11 @@ async def stemmen(q):
                 meeste_stemmen = 0
             else:
                 await main_channel.send(f"{vermoord.name} is opgehangen!")
-                gestemd = True
+                stemmen_done = True
                 votes_dict = {}
                 votes = []
                 alGestemd = []
                 meeste_stemmen = 0
-
 
 
 async def avond(a):
