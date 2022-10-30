@@ -35,12 +35,6 @@ de_monarch = None
 potentiele_monarch = []
 potentie = True
 
-cupidomessage = False
-zienermessage = False
-weerwolfmessage = False
-heksmessage = False
-stemmessage = False
-
 weerwolven = []
 votes = []
 votes_dict = {}
@@ -55,6 +49,13 @@ tie_list = []
 monarchvote = []
 monarch_dict = {}
 monarch_message = False
+
+
+cupidomessage = False
+zienermessage = False
+weerwolfmessage = False
+heksmessage = False
+stemmessage = False
 
 cupido_done = False
 ziener_done = False
@@ -83,6 +84,11 @@ async def on_message(message):
 
     if message.content.startswith("start weerwolven"):
         guild = message.guild
+        game_active = True
+        await avond(message)
+        await eerste_nacht(message)
+        while game_active:
+            await elke_nacht(message)
         # if message.guild == guild
 
     global created_channels
@@ -595,6 +601,7 @@ async def monarchspeeches(p):
         speech_done = True
         speech_voice = discord.utils.get(p.guild.voice_channels, name="speech_voice")
         speech_voice.delete()
+
 
 async def monarchvoting(k):
     global players
