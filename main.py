@@ -552,11 +552,11 @@ async def monarchvoting(k):
     global tie_list
     global monarchvote
     global monarch_dict
-    global monarchspeech_message
+    global monarch_message
     global alivePlayers
     vermoord = None
 
-    if not monarchspeech_message:
+    if not monarch_message:
         await main_channel.send("Stem nu allemaal op je favoriete koning.")
         monarchspeech_message = True
 
@@ -631,6 +631,7 @@ async def monarchvoting(k):
                 alGestemd = []
                 meeste_stemmen = 0
                 tie_list = []
+
 
 async def avond(a):
     await create_channels(a)
