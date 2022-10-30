@@ -32,6 +32,8 @@ already_joined_amount = 0
 testing = False
 done = None
 de_monarch = None
+potentiele_monarch = []
+potentie = True
 
 cupidomessage = False
 zienermessage = False
@@ -58,6 +60,7 @@ cupido_done = False
 ziener_done = False
 weerwolf_done = False
 heks_done = False
+speech_done = False
 monarch_done = False
 stemmen_done = False
 
@@ -544,6 +547,43 @@ async def stemmen(q):
                 meeste_stemmen = 0
                 tie_list = []
 
+
+async def monarchspeeches(p):
+    global guild
+    global potentiele_monarch
+    global potentie
+    global speech_done
+
+    main_channel = discord.utils.get(p.guild.text_channels, name="main_channel")
+
+    def check(m):
+        return client.user != m.author \
+               and m.content.startswith("!") \
+               and m.guild == guild
+
+    msg = await client.wait_for("message", check=check)
+    msg.content = msg.content.lower()
+
+    await main_channel.send(
+        "Wie wil een poging wagen om Koning te worden? Geinteresseerden sturen \"ik zou koning willen worden\". "
+        "als iedereen erin zit stuurd: Genoeg!")
+    while potentie:
+        if msg.content.lower().startswith("ik zou koning willen worden"):
+            if msg.author in potentiele_monarch:
+                await main_channel.send("Je staat al op de lijst.")
+            else:
+                potentiele_monarch.append(msg.author)
+        if msg.content.lower().startswith("Genoeg!"):
+            potentie = False
+    await p.guild.create_voice_channel(name="speech_voice", reason="monarch speeches", overwrites=None)
+    await main_channel.send("Ga nu allemaal in de speech_voice channel en geef jullie speeches op deze volgorde:")
+    for i in range(0, len(potentiele_monarch)):
+        main_channel.send(f"{i + 1}. {potentiele_monarch.name}")
+    await main_channel.send("Als de speeches klaar zijn stuur: \"klaar\"")
+    if msg.content.startswith("klaar"):
+        speech_done = True
+        speech_voice = discord.utils.get(p.guild.voice_channels, name="speech_voice")
+        speech_voice.delete()
 
 async def monarchvoting(k):
     global players
