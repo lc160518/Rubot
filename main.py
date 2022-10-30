@@ -47,7 +47,8 @@ slachtoffers_dict = {}
 meeste_stemmen = 0
 alGestemd = []
 tie_message = "Het is gelijkspel tussen"
-
+tie = False
+tie_list = []
 
 @client.event
 async def on_message(message):
@@ -300,11 +301,11 @@ async def weerwolf(j):
     global slachtoffers_dict
     global meeste_stemmen
     global alGestemd
-
+    global tie_message
+    global tie
+    global tie_list
     het_slachtoffer = None
-    tie = False
-    tie_list = []
-    tie_message = "Het is gelijkspel tussen"
+
 
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
     if not weerwolfmessage:
@@ -435,6 +436,7 @@ async def heks(b):
 
 async def stemmen(q):
     global players
+    global gestemd
     main_channel = discord.utils.get(q.guild.text_channels, name="main_channel")
     playerIdList = list(players)
     global votes
@@ -442,7 +444,9 @@ async def stemmen(q):
     global alGestemd
     global meeste_stemmen
     global tie_message
-
+    global tie
+    global tie_list
+    lijk = None
     def check(m):
         return client.user != q.author \
                and m.content.startswith("!")
@@ -482,15 +486,15 @@ async def stemmen(q):
 
                 if votes_dict[votez[i]] == meeste_stemmen:
                     tie_list.append(votez[i])
-                    if het_slachtoffer != None and het_slachtoffer not in tie_list:
-                        tie_list.append(het_slachtoffer)
+                    if lijk != None and lijk not in tie_list:
+                        tie_list.append(lijk)
                     tie = True
 
                 if votes_dict[votez[i]] > meeste_stemmen:
                     if tie == True:
                         tie = False
                         tie_list = []
-                    het_slachtoffer = votez[i]
+                    lijk = votez[i]
                     meeste_stemmen = votes_dict[votez[i]]
 
             if tie:
@@ -508,9 +512,7 @@ async def stemmen(q):
                 alGestemd = []
                 meeste_stemmen = 0
             else:
-                await main_channel.send(f"{het_slachtoffer.name} is vermoord!")
-                deathlist.append(het_slachtoffer)
-                print(deathlist)
+                await main_channel.send(f"{lijk.name} is opgehangen!")
                 gestemd = True
 
 
