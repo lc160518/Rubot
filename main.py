@@ -46,6 +46,7 @@ slachtoffers = []
 slachtoffers_dict = {}
 meeste_stemmen = 0
 alGestemd = []
+tie_message = "Het is gelijkspel tussen"
 
 
 @client.event
@@ -440,6 +441,7 @@ async def stemmen(q):
     global votes_dict
     global alGestemd
     global meeste_stemmen
+    global tie_message
 
     def check(m):
         return client.user != q.author \
@@ -448,8 +450,6 @@ async def stemmen(q):
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
 
-    playersIdList = list(players)
-
     if msg.content.startswith("!") and msg.channel == main_channel:
         for i in range(0, len(weerwolven)):
             y = await client.fetch_user(weerwolven[i])
@@ -457,8 +457,8 @@ async def stemmen(q):
                 await main_channel.send("Je kunt geen weerwolf vermoorden")
                 return
         if msg.author.name not in alGestemd:
-            for i in range(0, len(playersIdList)):
-                z = await client.fetch_user(playersIdList[i])
+            for i in range(0, len(playerIdList)):
+                z = await client.fetch_user(playerIdList[i])
                 if z.name.lower() in msg.content.lower():
                     votes.append(z)
                     alGestemd.append(msg.author.name)
