@@ -183,11 +183,13 @@ async def pre_game(r):
         " overleven!")
 
 
-async def dood(v, r):
+async def dood(r):
     global players
+    global deathlist
+
     all_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
                     "jager_channel", "cupido_channel", "meisje_channel", "dood_channel"]
-    for victim in v:
+    for victim in deathlist:
         override = discord.PermissionOverwrite()
         override.view_channel = True
         override.send_messages = False
@@ -572,7 +574,6 @@ async def dag(r):
         member = client.fetch_user(i)
         await main_channel.set_permissions(member, overwrite=None)
 
-    # await reveal_dood(r)
     await stemmen(r)
 
 
