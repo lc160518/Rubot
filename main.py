@@ -63,6 +63,7 @@ heks_done = False
 speech_done = False
 monarch_done = False
 stemmen_done = False
+guild = None
 
 
 @client.event
@@ -71,6 +72,7 @@ async def on_message(message):
     global testing
     global cupidomessage
     global ziener_done
+    global guild
 
     if client.user == message.author:
         return
@@ -80,7 +82,8 @@ async def on_message(message):
         await meisje(message)
 
     if message.content.startswith("start weerwolven"):
-        await playerjoining(message)
+        guild = message.guild
+        # if message.guild == guild
 
     global created_channels
     text_channel_list = []
@@ -144,7 +147,8 @@ async def playerjoining(s):
         def check(m):
             return client.user != s.author \
                    and m.content == "ik" \
-                   or m.content == "disable joining"
+                   or m.content == "disable joining" \
+                   and m.guild == guild
 
         msg = await client.wait_for("message", check=check)
         msg.content = msg.content.lower()
@@ -247,6 +251,7 @@ async def cupido(g):
     global lovers
     global cupidomessage
     global players
+    global cupido_done
 
     playerIdList = list(players)
 
@@ -257,7 +262,8 @@ async def cupido(g):
 
     def check(m):
         return client.user != g.author \
-               and m.content.startswith("!")
+               and m.content.startswith("!") \
+               and m.guild == guild
 
     msg = await client.wait_for("message", check=check)
     if msg.channel == cupido_channel:
@@ -276,6 +282,7 @@ async def cupido(g):
         await lover1_dm.send(f"Jij en {lovers[1].name} zijn geliefden.")
         lover2_dm = await lovers[1].create_dm()
         await lover2_dm.send(f"Jij en {lovers[0].name} zijn geliefden.")
+        cupido_done = True
 
 
 async def ziener(e):
@@ -292,7 +299,8 @@ async def ziener(e):
 
     def check(m):
         return client.user != e.author \
-               and m.content.startswith("!")
+               and m.content.startswith("!") \
+               and m.guild == guild
 
     msg = await client.wait_for("message", check=check)
     if msg.content.startswith("!") and msg.channel == ziener_channel:
@@ -328,7 +336,8 @@ async def weerwolf(j):
 
     def check(m):
         return client.user != j.author \
-               and m.content.startswith("!")
+               and m.content.startswith("!") \
+               and m.guild == guild
 
     playersIdList = list(players)
 
@@ -424,10 +433,11 @@ async def heks(b):
 
     def check(m):
 
-        return client.user != b.author \
+        return client.user != m.author \
                or m.content.startswith("red") \
                or m.content.startswith("dood") \
-               or m.content.startswith("ik geniet")
+               or m.content.startswith("ik geniet") \
+               and m.guild == guild
 
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
@@ -473,7 +483,8 @@ async def stemmen(q):
 
     def check(m):
         return client.user != q.author \
-               and m.content.startswith("!")
+               and m.content.startswith("!") \
+               and m.guild == guild
 
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
@@ -608,7 +619,8 @@ async def monarchvoting(k):
 
     def check(m):
         return client.user != k.author \
-               and m.content.startswith("!")
+               and m.content.startswith("!") \
+               and m.guild == guild
 
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
@@ -686,7 +698,8 @@ async def avond(a):
 
 
 async def eerste_nacht(j):
-    await cupido(j)
+    while not cupido_done:
+        await cupido(j)
 
 
 async def elke_nacht(k):
@@ -700,9 +713,14 @@ async def elke_nacht(k):
         member = client.fetch_user(i)
         await main_channel.set_permissions(member, overwrite=override)
 
-    await ziener(k)
-    await weerwolf(k)
-    await heks(k)
+    while not ziener_done:
+        await ziener(k)
+
+    while not weerwolf_done:
+        await weerwolf(k)
+
+    while not heks_done:
+        await heks(k)
 
 
 async def dag(r):
@@ -714,7 +732,8 @@ async def dag(r):
         member = client.fetch_user(i)
         await main_channel.set_permissions(member, overwrite=None)
 
-    await stemmen(r)
+    while not stemmen_done:
+        await stemmen(r)
 
 
 async def permissies(r):
