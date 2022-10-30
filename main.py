@@ -465,6 +465,7 @@ async def stemmen(q):
     global tie_message
     global tie
     global tie_list
+    global alivePlayers
     vermoord = None
 
     await main_channel.send("Stem op iemand wie jij vermoedt een weerwolf te zijn.")
