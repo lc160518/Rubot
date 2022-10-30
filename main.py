@@ -48,6 +48,9 @@ alGestemd = []
 tie_message = "Het is gelijkspel tussen"
 tie = False
 tie_list = []
+monarchvote = []
+monarch_dict = {}
+monarch_message = False
 
 cupido_done = False
 ziener_done = False
@@ -396,6 +399,8 @@ async def weerwolf(j):
                 slachtoffers = []
                 alGestemd = []
                 meeste_stemmen = 0
+                tie_list = []
+                tie_message = "Het is gelijkspel tussen"
             else:
                 await weerwolf_channel.send(f"{het_slachtoffer.name} is vermoord!")
                 deathlist.append(het_slachtoffer)
@@ -405,6 +410,7 @@ async def weerwolf(j):
                 slachtoffers = []
                 alGestemd = []
                 meeste_stemmen = 0
+                tie_list = []
 
 
 async def heks(b):
@@ -538,6 +544,8 @@ async def stemmen(q):
                 votes = []
                 alGestemd = []
                 meeste_stemmen = 0
+                tie_list = []
+                tie_message = "Het is gelijkspel tussen"
             else:
                 await main_channel.send(f"{vermoord.name} is opgehangen!")
                 stemmen_done = True
@@ -545,7 +553,99 @@ async def stemmen(q):
                 votes = []
                 alGestemd = []
                 meeste_stemmen = 0
+                tie_list = []
 
+
+async def monarchvoting(k):
+    global players
+    global gestemd
+    main_channel = discord.utils.get(k.guild.text_channels, name="main_channel")
+    playerIdList = list(players)
+    global alGestemd
+    global meeste_stemmen
+    global tie_message
+    global tie
+    global tie_list
+    global monarchvote
+    global monarch_dict
+    global monarchspeech_message
+    vermoord = None
+
+    if not monarchspeech_message:
+        await main_channel.send("Stem nu allemaal op je favoriete koning.")
+        monarchspeech_message = True
+
+    def check(m):
+        return client.user != k.author \
+               and m.content.startswith("!")
+
+    msg = await client.wait_for("message", check=check)
+    msg.content = msg.content.lower()
+
+    if msg.content.startswith("!") and msg.channel == main_channel:
+        if msg.author.name not in alGestemd:
+            if msg.author.name.lower() in msg.content.lower():
+                await main_channel.send(f"{msg.author.name} je kan niet op jezelf stemmen")
+                return
+            else:
+                for i in range(0, len(playerIdList)):
+                    z = await client.fetch_user(playerIdList[i])
+                    if z.name.lower() in msg.content.lower():
+                        monarchvote.append(z)
+                        alGestemd.append(msg.author.name)
+        else:
+            await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
+            return
+
+        if len(monarchvote) == len(alivePlayers):
+            for i in monarchvote:
+                if i not in monarch_dict:
+                    monarch_dict.update({i: 1})
+                else:
+                    monarch_dict.update({i: monarch_dict[i] + 1})
+
+            monark = list(monarch_dict)
+
+            for i in range(0, len(monarch_dict)):
+                print(monarch_dict[monark[i]])
+
+                if monarch_dict[monark[i]] == meeste_stemmen:
+                    tie_list.append(monark[i])
+                    if vermoord is not None and vermoord not in tie_list:
+                        tie_list.append(vermoord)
+                    tie = True
+
+                if monarch_dict[monark[i]] > meeste_stemmen:
+                    if tie:
+                        tie = False
+                        tie_list = []
+                    vermoord = monark[i]
+                    meeste_stemmen = monarch_dict[monark[i]]
+
+            if tie:
+                for i in range(0, len(tie_list)):
+                    if i == len(tie_list) - 1:
+                        tie_message = tie_message + " & " + str(tie_list[i]) + "."
+                    elif i == 0:
+                        tie_message = tie_message + " " + str(tie_list[i])
+                    else:
+                        tie_message = tie_message + ", " + str(tie_list[i])
+                await main_channel.send(tie_message)
+                await main_channel.send("stem opnieuw maar nu op dezelfde aub")
+                monarch_dict = {}
+                monarchvote = []
+                alGestemd = []
+                meeste_stemmen = 0
+                tie_list = []
+                tie_message = "Het is gelijkspel tussen"
+            else:
+                await main_channel.send(f"{vermoord.name} is opgehangen!")
+                gestemd = True
+                monarch_dict = {}
+                monarchvote = []
+                alGestemd = []
+                meeste_stemmen = 0
+                tie_list = []
 
 async def avond(a):
     await create_channels(a)
