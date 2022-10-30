@@ -74,22 +74,6 @@ async def on_message(message):
     if message.channel == weerwolf_channel:
         await meisje(message)
 
-    if message.content.startswith("wolfies"):
-        print("wolfies")
-        players.update({398769543482179585: "Burger"})
-        players.update({440892872867184640: "Burger"})
-        players.update({481456565254225920: "Burger"})
-        players.update({627172201082388500: "Weerwolf"})
-
-        weerwolven.append(125979540924268544)
-        weerwolven.append(627172201082388500)
-        weerwolven.append(497826023707115522)
-
-        print(players)
-        while not geweerwolved:
-            print("geweerwolvd")
-            await weerwolf(message)
-
     if message.content.startswith("start weerwolven"):
         await playerjoining(message)
 
@@ -569,6 +553,7 @@ async def monarchvoting(k):
     global monarchvote
     global monarch_dict
     global monarchspeech_message
+    global alivePlayers
     vermoord = None
 
     if not monarchspeech_message:
