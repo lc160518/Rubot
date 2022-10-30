@@ -31,6 +31,7 @@ lovers = []
 already_joined_amount = 0
 testing = False
 done = None
+de_monarch = None
 
 cupidomessage = False
 zienermessage = False
@@ -535,6 +536,7 @@ async def stemmen(q):
                 tie_message = "Het is gelijkspel tussen"
             else:
                 await main_channel.send(f"{vermoord.name} is opgehangen!")
+                deathlist.append(vermoord)
                 stemmen_done = True
                 votes_dict = {}
                 votes = []
@@ -557,7 +559,8 @@ async def monarchvoting(k):
     global monarch_message
     global monarch_done
     global alivePlayers
-    vermoord = None
+    global de_monarch
+    koning = None
 
     if not monarch_message:
         await main_channel.send("Stem nu allemaal op je favoriete koning.")
@@ -599,15 +602,15 @@ async def monarchvoting(k):
 
                 if monarch_dict[monark[i]] == meeste_stemmen:
                     tie_list.append(monark[i])
-                    if vermoord is not None and vermoord not in tie_list:
-                        tie_list.append(vermoord)
+                    if koning is not None and koning not in tie_list:
+                        tie_list.append(koning)
                     tie = True
 
                 if monarch_dict[monark[i]] > meeste_stemmen:
                     if tie:
                         tie = False
                         tie_list = []
-                    vermoord = monark[i]
+                    koning = monark[i]
                     meeste_stemmen = monarch_dict[monark[i]]
 
             if tie:
@@ -627,7 +630,8 @@ async def monarchvoting(k):
                 tie_list = []
                 tie_message = "Het is gelijkspel tussen"
             else:
-                await main_channel.send(f"{vermoord.name} is opgehangen!")
+                await main_channel.send(f"{koning.name} is gekroond!")
+                de_monarch = koning
                 monarch_done = True
                 monarch_dict = {}
                 monarchvote = []
