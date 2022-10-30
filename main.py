@@ -25,6 +25,7 @@ players = {}  # voor de dictiony
 spelers = []  # voor de permissions
 roleNumbers = []
 playerNames = []
+alivePlayers = []
 rolesList = []
 lovers = []
 already_joined_amount = 0
@@ -178,10 +179,12 @@ async def pre_game(r):
 async def dood(r):
     global players
     global deathlist
+    global alivePlayers
 
     all_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
                     "jager_channel", "cupido_channel", "meisje_channel", "dood_channel"]
     for victim in deathlist:
+        alivePlayers.remove(victim)
         override = discord.PermissionOverwrite()
         override.view_channel = True
         override.send_messages = False
