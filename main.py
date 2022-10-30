@@ -371,7 +371,7 @@ async def weerwolf(j):
                     tie = True
 
                 if slachtoffers_dict[slachtofferz[i]] > meeste_stemmen:
-                    if tie == True:
+                    if tie:
                         tie = False
                         tie_list = []
                     het_slachtoffer = slachtofferz[i]
