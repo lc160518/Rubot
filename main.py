@@ -545,7 +545,6 @@ async def stemmen(q):
 
 async def monarchvoting(k):
     global players
-    global gestemd
     main_channel = discord.utils.get(k.guild.text_channels, name="main_channel")
     playerIdList = list(players)
     global alGestemd
@@ -556,6 +555,7 @@ async def monarchvoting(k):
     global monarchvote
     global monarch_dict
     global monarch_message
+    global monarch_done
     global alivePlayers
     vermoord = None
 
@@ -628,7 +628,7 @@ async def monarchvoting(k):
                 tie_message = "Het is gelijkspel tussen"
             else:
                 await main_channel.send(f"{vermoord.name} is opgehangen!")
-                gestemd = True
+                monarch_done = True
                 monarch_dict = {}
                 monarchvote = []
                 alGestemd = []
