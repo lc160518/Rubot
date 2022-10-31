@@ -248,6 +248,7 @@ async def dood(r):
     jager_slachtoffer = False
     jager_message = False
     while not jager_slachtoffer:
+
         if jager_user in deathlist or jager_id in deathlist:
             if not jager_message:
                 await main_channel.send("Jager, wie wordt je slachtoffer?")
@@ -262,11 +263,12 @@ async def dood(r):
             msg.content = msg.content.lower()
 
             if msg.content.startswith("!"):
-                for y in playerIdList:
-                    mens = await client.fetch_user(y)
-                    if mens.name.lower() in msg.content:
-                        deathlist.append(y)
-                        jager_slachtoffer = True
+                if players[msg.author] == "Jager":
+                    for y in playerIdList:
+                        mens = await client.fetch_user(y)
+                        if mens.name.lower() in msg.content:
+                            deathlist.append(y)
+                            jager_slachtoffer = True
 
     await main_channel.send("Het is dag in wakkerdam. Iedereen wordt wakker...")
     if len(deathlist) == 1:
