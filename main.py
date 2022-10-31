@@ -88,21 +88,8 @@ async def on_message(message):
         await meisje(message)
 
     if message.content.startswith("start weerwolven"):
-        guild = message.guild
-        game_active = True
-        await avond(message)
-        await eerste_nacht(message)
-        while game_active:
-            await elke_nacht(message)
-            await dag(message)
+        await start(message)
 
-        if not game_active:
-            text_channel_list = []
-            for channel in message.guild.text_channels:
-                text_channel_list.append(channel)
-            for channel in text_channel_list:
-                if channel.name in created_channels:
-                    await channel.delete()
 
     if message.content.startswith("win check"):
         players.update({398769543482179585: "hamburger"})
@@ -154,6 +141,43 @@ created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
                      "jager_channel",
                      "cupido_channel", "meisje_channel", "dood_channel"]
+
+
+async def start(j):
+    global guild
+    global game_active
+
+    guild = j.guild
+    bericht_gestuurd = j.channel
+    game_active = True
+    await avond(j)
+    await eerste_nacht(j)
+    while game_active:
+        await elke_nacht(j)
+        await dag(j)
+
+    if not game_active:
+        text_channel_list = []
+        for channel in j.guild.text_channels:
+            text_channel_list.append(channel)
+        for channel in text_channel_list:
+            if channel.name in created_channels:
+                await channel.delete()
+    if not game_active:
+        await bericht_gestuurd.send("Wil je nog een keer spelen?")
+        def check(m):
+            return client.user != m.author \
+                   and m.content == "ja" \
+                   or m.content == "nee" \
+                   and m.guild == guild
+
+        msg = await client.wait_for("message", check=check)
+        msg.content = msg.content.lower()
+        if msg.content.startswith("ja"):
+            await start(j)
+
+        if msg.content.startswith("nee"):
+            await bericht_gestuurd.send("onaardig...")
 
 
 async def create_channels(s):
