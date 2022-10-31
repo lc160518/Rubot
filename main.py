@@ -815,7 +815,7 @@ async def elke_nacht(k):
     override = discord.PermissionOverwrite()
     override.view_channel = False
     for i in playerIdList:
-        member = client.fetch_user(i)
+        member = await client.fetch_user(i)
         await main_channel.set_permissions(member, overwrite=override)
 
     while not ziener_done:
