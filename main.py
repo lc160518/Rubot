@@ -409,7 +409,7 @@ async def weerwolf(j):
     for i in players:
         g = await client.fetch_user(i)
         if "Weerwolf" == players[i]:
-            weerwolven.append(g.name)
+            weerwolven.append(g.id)
 
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
     if not weerwolfmessage:
