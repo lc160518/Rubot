@@ -245,7 +245,7 @@ async def dood(r):
     jager_slachtoffer = False
     jager_message = False
     while not jager_slachtoffer:
-        if jager_user in deathlist or jager_id in deathlist:
+        if jager_user in deathlist:
             if not jager_message:
                 await main_channel.send("Jager, wie wordt je slachtoffer? (gebruik !naam)")
                 jager_message = True
@@ -504,9 +504,9 @@ async def heks(b):
     playerIdList = list(players)
     heks_channel = discord.utils.get(b.guild.text_channels, name="heks_channel")
 
-    weerwolf_slachtoffer = await client.fetch_user(deathlist[0])
+    weerwolf_slachtoffer = deathlist[0]
 
-    if heksmessage:
+    if not heksmessage:
         await heks_channel.send(
             f"Hallo geniepige gemenerik, wil je liever {weerwolf_slachtoffer.name} redden,"
             f" iemand anders ook te vermoorden of lekker rustig blijven genieten van het moment?")
@@ -514,7 +514,7 @@ async def heks(b):
             "Gebruik eenmaal in het spel \"red\" om het weerwolf slachtoffer te redden."
             " Gebruik eenmaal in het spel \"dood _naam_\" om het slachtoffer en nog een ander te vermoorden."
             " Gebruik \"ik geniet\" om je beurt voorbij te laten gaan!")
-        heksmessage = False
+        heksmessage = True
 
     def check(m):
 
@@ -528,11 +528,11 @@ async def heks(b):
     msg.content = msg.content.lower()
 
     if msg.content.startswith("red"):
-        heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
+        await heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
         heks_done = True
 
     if msg.content.startswith("dood"):
-        heks_channel.send(f"{weerwolf_slachtoffer.name} is gedood")
+        await heks_channel.send(f"{weerwolf_slachtoffer.name} is gedood")
         for i in range(len(players)):
             lijk = await client.fetch_user(playerIdList[i])
             if lijk.name.lower() in msg.content:
@@ -836,9 +836,12 @@ async def dag(r):
     await dood(r)
     reset_dones()
 
+    override = discord.PermissionOverwrite()
+    override.view_channel = True
+
     for i in playerIdList:
         member = client.fetch_user(i)
-        await main_channel.set_permissions(member, overwrite=None)
+        await main_channel.set_permissions(member, overwrite=overwrite)
 
     while not stemmen_done:
         await stemmen(r)
