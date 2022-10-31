@@ -832,7 +832,8 @@ async def win_check(f):
         await main_channel.send("Het spel is gewonnen door de weerwolven!")
         return
 
-    if "Weerwolf" in players.values():
+    listplayers = list(players)
+    if "Weerwolf" in players.values() and len(listplayers) == 2:
         game_active = False
         for e in lovers:
             if lovers[e.id] in players:
