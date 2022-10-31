@@ -776,6 +776,24 @@ async def monarchvoting(k):
                 tie_list = []
 
 
+def reset_dones():
+    global ziener_done
+    global weerwolf_done
+    global heks_done
+    global speech_done
+    global monarch_done
+    global potentie
+    global stemmen_done
+
+    ziener_done = False
+    weerwolf_done = False
+    heks_done = False
+    speech_done = False
+    monarch_done = False
+    potentie = True
+    stemmen_done = False
+
+
 async def avond(a):
     await create_channels(a)
     if not testing:
@@ -816,6 +834,7 @@ async def dag(r):
     main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
 
     await dood(r)
+    reset_dones()
 
     for i in playerIdList:
         member = client.fetch_user(i)
