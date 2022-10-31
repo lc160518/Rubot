@@ -833,15 +833,15 @@ async def dag(r):
     playerIdList = list(players)
     main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
 
-    await dood(r)
-    reset_dones()
-
     override = discord.PermissionOverwrite()
     override.view_channel = True
 
     for i in playerIdList:
         member = client.fetch_user(i)
         await main_channel.set_permissions(member, overwrite=override)
+
+    await dood(r)
+    reset_dones()
 
     while not stemmen_done:
         await stemmen(r)
