@@ -90,11 +90,19 @@ async def on_message(message):
         await eerste_nacht(message)
         while game_active:
             await elke_nacht(message)
-        # if message.guild == guild
 
-    global created_channels
-    text_channel_list = []
+        if not game_active:
+            global created_channels
+            text_channel_list = []
+            for channel in message.guild.text_channels:
+                text_channel_list.append(channel)
+            for channel in text_channel_list:
+                if channel.name in created_channels:
+                    await channel.delete()
+
     if message.content.startswith("delete channels"):
+        global created_channels
+        text_channel_list = []
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
         for channel in text_channel_list:
@@ -186,13 +194,12 @@ async def playerjoining(s):
                 joining = False
             break
     role_selector()
-    await permissies(s)
-    print("Done")
-    await pre_game(main_channel)
+    print("Joining is done")
 
 
 async def pre_game(r):
-    await r.send(
+    main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
+    await main_channel.send(
         "Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
         "Elke nacht veranderen bepaalde bewoners van het gehucht in mensverslindende wolven, "
         "die afschuwelijke moorden plegen... Moorden, die het daglicht niet kunnen verdragen... "
@@ -490,9 +497,11 @@ async def heks(b):
     playerIdList = list(players)
     heks_channel = discord.utils.get(b.guild.text_channels, name="heks_channel")
 
+    weerwolf_slachtoffer = await client.fetch_user(deathlist[0])
+
     if heksmessage:
         await heks_channel.send(
-            f"Hallo geniepige gemenerik, wil je liever {deathlist[0].name} redden,"
+            f"Hallo geniepige gemenerik, wil je liever {weerwolf_slachtoffer.name} redden,"
             f" iemand anders ook te vermoorden of lekker rustig blijven genieten van het moment?")
         await heks_channel.send(
             "Gebruik eenmaal in het spel \"red\" om het weerwolf slachtoffer te redden."
@@ -512,17 +521,15 @@ async def heks(b):
     msg.content = msg.content.lower()
 
     if msg.content.startswith("red"):
-        heks_channel.send(f"{deathlist[0].name} is gered!")
+        heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
         heks_done = True
 
-    slachtoffer = deathlist[0]
-
     if msg.content.startswith("dood"):
-        heks_channel.send(f"{slachtoffer.name} is gedood")
+        heks_channel.send(f"{weerwolf_slachtoffer.name} is gedood")
         for i in range(len(players)):
             lijk = await client.fetch_user(playerIdList[i])
             if lijk.name.lower() in msg.content:
-                await heks_channel.send("")
+                await heks_channel.send(f"{lijk.name} is ook gedood")
                 deathlist.append(lijk)
         heks_done = True
 
@@ -764,7 +771,10 @@ async def monarchvoting(k):
 
 async def avond(a):
     await create_channels(a)
-    await playerjoining(a)
+    if not testing:
+        await playerjoining(a)
+    await permissies(a)
+    await pre_game(a)
 
 
 async def eerste_nacht(j):
@@ -805,11 +815,30 @@ async def dag(r):
     while not stemmen_done:
         await stemmen(r)
 
+    await win_check(r)
 
-async def win_check():
+
+async def win_check(f):
     global game_active
+    main_channel = discord.utils.get(f.guild.text_channels, name="main_channel")
+
     if "Weerwolf" not in players.values():
         game_active = False
+        await main_channel.send("Het spel is gewonnen door de burgers!")
+        return
+
+    if len(set(players.values())) == 1:
+        game_active = False
+        await main_channel.send("Het spel is gewonnen door de weerwolven!")
+        return
+
+    if "Weerwolf" in players.values():
+        game_active = False
+        for e in lovers:
+            if lovers[e.id] in players:
+                game_active = False
+                await main_channel.send("Het spel is gewonnen door de geliefden!")
+                return
 
 
 async def permissies(r):
