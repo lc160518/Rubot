@@ -264,12 +264,12 @@ async def dood(r):
                         deathlist.append(y)
                         jager_slachtoffer = True
 
-    print(deathlist)
+    await main_channel.send("Het is dag in wakkerdam. Iedereen wordt wakker...")
     if len(deathlist) == 1:
-        await main_channel.send(f"<@{deathlist[0]}> is gestorven")
+        await main_channel.send(f"Behalve<@{deathlist[0]}>!!")
 
     if len(deathlist) == 2:
-        await main_channel.send(f"<@{deathlist[0]}> en <@{deathlist[1]}> zijn gestorven")
+        await main_channel.send(f"Behalve<@{deathlist[0]}> en <@{deathlist[1]}>!!")
 
     for victim in deathlist:
         print(victim)
@@ -814,6 +814,8 @@ async def dag(r):
     global players
     playerIdList = list(players)
     main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
+
+    await dood(r)
 
     for i in playerIdList:
         member = client.fetch_user(i)
