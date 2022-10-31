@@ -48,6 +48,9 @@ tie_list = []
 monarchvote = []
 monarch_dict = {}
 
+levensdrank = False
+gif = False
+
 monarch_message = False
 cupidomessage = False
 zienermessage = False
@@ -247,7 +250,7 @@ async def dood(r):
     while not jager_slachtoffer:
         if jager_user in deathlist or jager_id in deathlist:
             if not jager_message:
-                await main_channel.send("Jager, wie wordt je slachtoffer? (gebruik !naam)")
+                await main_channel.send("Jager, wie wordt je slachtoffer?")
                 jager_message = True
 
             def check(m):
@@ -414,7 +417,7 @@ async def weerwolf(j):
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
     if not weerwolfmessage:
         await weerwolf_channel.send(
-            "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben en geef dan hun naam met ![name]")
+            "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben!")
         weerwolfmessage = True
 
     def check(m):
@@ -500,6 +503,8 @@ async def heks(b):
     global players
     global heksmessage
     global heks_done
+    global levensdrank
+    global gif
 
     playerIdList = list(players)
     heks_channel = discord.utils.get(b.guild.text_channels, name="heks_channel")
@@ -508,8 +513,8 @@ async def heks(b):
 
     if heksmessage:
         await heks_channel.send(
-            f"Hallo geniepige gemenerik, wil je liever {weerwolf_slachtoffer.name} redden,"
-            f" iemand anders ook te vermoorden of lekker rustig blijven genieten van het moment?")
+            f"Hallo geniepige gemenerik, wil je {weerwolf_slachtoffer.name} redden,"
+            f" iemand anders vermoorden of lekker rustig blijven genieten van het moment?")
         await heks_channel.send(
             "Gebruik eenmaal in het spel \"red\" om het weerwolf slachtoffer te redden."
             " Gebruik eenmaal in het spel \"dood _naam_\" om het slachtoffer en nog een ander te vermoorden."
@@ -528,17 +533,24 @@ async def heks(b):
     msg.content = msg.content.lower()
 
     if msg.content.startswith("red"):
-        heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
-        heks_done = True
+        if not levensdrank:
+            heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
+            deathlist.remove(weerwolf_slachtoffer)
+            heks_done = True
+        else:
+            await heks_channel.send("Je hebt geen levensdrank meer...")
 
     if msg.content.startswith("dood"):
         heks_channel.send(f"{weerwolf_slachtoffer.name} is gedood")
-        for i in range(len(players)):
-            lijk = await client.fetch_user(playerIdList[i])
-            if lijk.name.lower() in msg.content:
-                await heks_channel.send(f"{lijk.name} is ook gedood")
-                deathlist.append(lijk)
-        heks_done = True
+        if not gif:
+            for i in range(len(players)):
+                lijk = await client.fetch_user(playerIdList[i])
+                if lijk.name.lower() in msg.content:
+                    await heks_channel.send(f"{lijk.name} is ook gedood")
+                    deathlist.append(lijk)
+            heks_done = True
+        else:
+            await heks_channel.send("Je heb geen gif meer...")
 
     if msg.content.startswith("ik geniet"):
         await heks_channel.send("Een goede keuze is gemaakt.")
