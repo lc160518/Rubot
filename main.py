@@ -91,6 +91,7 @@ async def on_message(message):
         await eerste_nacht(message)
         while game_active:
             await elke_nacht(message)
+            await dag(message)
 
         if not game_active:
             text_channel_list = []
@@ -207,7 +208,7 @@ async def playerjoining(s):
 async def pre_game(r):
     main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
     await main_channel.send(
-        "Het ingeslapen kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
+        "Het ingeslapen monarchische kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
         "Elke nacht veranderen bepaalde bewoners van het gehucht in mensverslindende wolven, "
         "die afschuwelijke moorden plegen... Moorden, die het daglicht niet kunnen verdragen... "
         "Wat pas nog een eeuwenoude legende was, is plotseling op onverklaarbare wijze brute "
@@ -313,19 +314,13 @@ def role_selector():
 
 
 # Distributes roles from rolesList to players
-async def distribute_roles(gamers, roles):
+def distribute_roles(gamers, roles):
     playerNamesList = list(gamers)
-    global weerwolven
 
     for j in range(0, len(gamers)):
         rNumber = random.randrange(len(roles))
         gamers[playerNamesList[j]] = roles[rNumber]
         del roles[rNumber]
-
-    for i in players:
-        g = await client.fetch_user(i)
-        if "Weerwolf" == players[i]:
-            weerwolven.append(g.name)
 
     return gamers
 
@@ -410,6 +405,11 @@ async def weerwolf(j):
     global tie
     global tie_list
     het_slachtoffer = None
+
+    for i in players:
+        g = await client.fetch_user(i)
+        if "Weerwolf" == players[i]:
+            weerwolven.append(g.name)
 
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
     if not weerwolfmessage:
