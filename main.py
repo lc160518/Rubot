@@ -841,7 +841,7 @@ async def dag(r):
 
     for i in playerIdList:
         member = client.fetch_user(i)
-        await main_channel.set_permissions(member, overwrite=overwrite)
+        await main_channel.set_permissions(member, overwrite=override)
 
     while not stemmen_done:
         await stemmen(r)
