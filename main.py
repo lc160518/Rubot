@@ -33,7 +33,7 @@ testing = False
 done = None
 de_monarch = None
 potentiele_monarch = []
-potentie = True
+
 
 weerwolven = []
 votes = []
@@ -48,8 +48,8 @@ tie = False
 tie_list = []
 monarchvote = []
 monarch_dict = {}
-monarch_message = False
 
+monarch_message = False
 cupidomessage = False
 zienermessage = False
 weerwolfmessage = False
@@ -62,6 +62,7 @@ weerwolf_done = False
 heks_done = False
 speech_done = False
 monarch_done = False
+potentie = True
 stemmen_done = False
 guild = None
 game_active = False
