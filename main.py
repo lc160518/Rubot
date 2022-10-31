@@ -34,7 +34,6 @@ done = None
 de_monarch = None
 potentiele_monarch = []
 
-
 weerwolven = []
 votes = []
 votes_dict = {}
@@ -76,6 +75,7 @@ async def on_message(message):
     global ziener_done
     global guild
     global game_active
+    global created_channels
 
     if client.user == message.author:
         return
@@ -93,7 +93,6 @@ async def on_message(message):
             await elke_nacht(message)
 
         if not game_active:
-            global created_channels
             text_channel_list = []
             for channel in message.guild.text_channels:
                 text_channel_list.append(channel)
@@ -101,8 +100,15 @@ async def on_message(message):
                 if channel.name in created_channels:
                     await channel.delete()
 
+    if message.content.startswith("win check"):
+        players.update({398769543482179585: "hamburger"})
+        players.update({627172201082388500: "Burger"})
+        lovers.append(398769543482179585)
+        lovers.append(627172201082388500)
+
+        await win_check(message)
+
     if message.content.startswith("delete channels"):
-        global created_channels
         text_channel_list = []
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
@@ -240,7 +246,7 @@ async def dood(r):
     while not jager_slachtoffer:
         if jager_user in deathlist or jager_id in deathlist:
             if not jager_message:
-                await main_channel.send("Jager, wie wordt je slachtoffer?")
+                await main_channel.send("Jager, wie wordt je slachtoffer? (gebruik !naam)")
                 jager_message = True
 
             def check(m):
@@ -836,8 +842,8 @@ async def win_check(f):
     listplayers = list(players)
     if "Weerwolf" in players.values() and len(listplayers) == 2:
         game_active = False
-        for e in lovers:
-            if lovers[e.id] in players:
+        for e in range(0, len(lovers)):
+            if lovers[e] in players:
                 game_active = False
                 await main_channel.send("Het spel is gewonnen door de geliefden!")
                 return
