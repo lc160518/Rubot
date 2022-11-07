@@ -90,7 +90,6 @@ async def on_message(message):
     if message.content.startswith("start weerwolven"):
         await start(message)
 
-
     if message.content.startswith("win check"):
         players.update({398769543482179585: "hamburger"})
         players.update({627172201082388500: "Burger"})
@@ -165,6 +164,7 @@ async def start(j):
                 await channel.delete()
     if not game_active:
         await bericht_gestuurd.send("Wil je nog een keer spelen?")
+
         def check(m):
             return client.user != m.author \
                    and m.content == "ja" \
