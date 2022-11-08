@@ -232,7 +232,7 @@ async def playerjoining(s):
             if len(players) < 6:
                 await msg.channel.send("Er zijn niet genoeg spelers, mensen kunnen nog joinen!")
             if len(players) >= 6:
-                await msg.channel.send("Er zijn genoeg spelerNames, rollen worden uitgedeelt!")
+                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
                 joining = False
             break
     role_selector()
