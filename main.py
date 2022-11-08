@@ -537,7 +537,7 @@ async def heks(b):
 
     weerwolf_slachtoffer = await client.fetch_user(deathlist[0])
 
-    if heksmessage:
+    if not heksmessage:
         await heks_channel.send(
             f"Hallo geniepige gemenerik, wil je {weerwolf_slachtoffer.name} redden,"
             f" iemand anders vermoorden of lekker rustig blijven genieten van het moment?")
@@ -545,7 +545,7 @@ async def heks(b):
             "Gebruik eenmaal in het spel \"red\" om het weerwolf slachtoffer te redden."
             " Gebruik eenmaal in het spel \"dood _naam_\" om het slachtoffer en nog een ander te vermoorden."
             " Gebruik \"ik geniet\" om je beurt voorbij te laten gaan!")
-        heksmessage = False
+        heksmessage = True
 
     def check(m):
 
