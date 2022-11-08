@@ -864,7 +864,7 @@ async def elke_nacht(k):
     main_channel = discord.utils.get(k.guild.text_channels, name="main_channel")
 
     override = discord.PermissionOverwrite()
-    override.view_channel = False
+    override.send_messages = False
     for i in playerIdList:
         member = await client.fetch_user(i)
         await main_channel.set_permissions(member, overwrite=override)
