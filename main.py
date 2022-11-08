@@ -90,6 +90,13 @@ async def on_message(message):
     if message.content.startswith("start weerwolven"):
         await start(message)
 
+    if message.content.startswith("heks tijd"):
+        players.update({398769543482179585: "Burger"})
+        players.update({627172201082388500: "Heks"})
+        alivePlayers.append(627172201082388500)
+        alivePlayers.append(398769543482179585)
+        await heks(message)
+
     if message.content.startswith("win check"):
         players.update({398769543482179585: "hamburger"})
         players.update({627172201082388500: "Burger"})
