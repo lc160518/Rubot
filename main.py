@@ -88,7 +88,10 @@ async def on_message(message):
         await meisje(message)
 
     if message.content.startswith("start weerwolven"):
-        await start(message)
+        startc = 0
+        if startc == 0:
+            startc += 1
+            await start(message)
 
     if message.content.startswith("heks tijd"):
         players.update({398769543482179585: "Burger"})
@@ -447,16 +450,18 @@ async def weerwolf(j):
     het_slachtoffer = None
 
     print("1")
-    for i in players:
-        print("1,5?")
-        g = await client.fetch_user(i)
-        if "Weerwolf" == players[i]:
-            weerwolven.append(g.id)
+
     print("2")
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
     print("3")
     if not weerwolfmessage:
         print("5")
+
+        for i in players:
+            print("1,5?")
+            g = await client.fetch_user(i)
+            if "Weerwolf" == players[i]:
+                weerwolven.append(g.id)
         await weerwolf_channel.send(
             "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben!")
         weerwolfmessage = True
@@ -489,7 +494,7 @@ async def weerwolf(j):
                 print("12")
                 if z.name.lower() in msg.content.lower():
                     print("13")
-                    slachtoffers.append(i)
+                    slachtoffers.append(playersIdList[i])
                     print("14")
                     alGestemd.append(msg.author.name)
                     print("15")
@@ -571,7 +576,8 @@ async def weerwolf(j):
                 tie_message = "Het is gelijkspel tussen"
                 print("48")
             else:
-                await weerwolf_channel.send(f"{het_slachtoffer.name} is vermoord!")
+                de_slachtoffer = await client.fetch_user(het_slachtoffer)
+                await weerwolf_channel.send(f"{de_slachtoffer.name} is vermoord!")
                 print("49")
                 deathlist.append(het_slachtoffer)
                 print("50")
@@ -926,8 +932,8 @@ async def elke_nacht(k):
 
     override = discord.PermissionOverwrite()
     override.send_messages = False
-    for i in playerIdList:
-        member = await client.fetch_user(i)
+    for i in range(0, len(playerIdList)):
+        member = await client.fetch_user(playerIdList[i])
         await main_channel.set_permissions(member, overwrite=override)
 
     while not ziener_done:
@@ -947,7 +953,9 @@ async def dag(r):
 
     for i in playerIdList:
         member = client.fetch_user(i)
-        await main_channel.set_permissions(member, overwrite=None)
+        override = discord.PermissionOverwrite()
+        override.send_messages = True
+        await main_channel.set_permissions(member, overwrite=override)
 
     await dood(r)
     reset_dones()
