@@ -242,6 +242,9 @@ async def playerjoining(s):
 async def pre_game(r):
     main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
     await main_channel.send(
+        "BELANGRIJK!!!!! Wanneer ik vraag om iemand te noemen, doe dat met !naam, tenzij anders vermeld!!" 
+        "Bijvoorbeeld !Rubot")
+    await main_channel.send(
         "Het ingeslapen monarchische kakdorpje Wakkerdam wordt sinds enige tijd belaagd door weerwolven! "
         "Elke nacht veranderen bepaalde bewoners van het gehucht in mensverslindende wolven, "
         "die afschuwelijke moorden plegen... Moorden, die het daglicht niet kunnen verdragen... "
