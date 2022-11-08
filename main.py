@@ -95,6 +95,7 @@ async def on_message(message):
         players.update({627172201082388500: "Heks"})
         alivePlayers.append(627172201082388500)
         alivePlayers.append(398769543482179585)
+        deathlist.append(940137904670404619)
         await heks(message)
 
     if message.content.startswith("win check"):
@@ -471,7 +472,7 @@ async def weerwolf(j):
             for i in range(0, len(playersIdList)):
                 z = await client.fetch_user(playersIdList[i])
                 if z.name.lower() in msg.content.lower():
-                    slachtoffers.append(z)
+                    slachtoffers.append(i)
                     alGestemd.append(msg.author.name)
                     await weerwolf_channel.send(f"{msg.author.name} heeft op {z.name} gestemd")
         else:
