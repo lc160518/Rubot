@@ -453,7 +453,7 @@ async def weerwolf(j):
             weerwolven.append(g.id)
     print("2")
     weerwolf_channel = discord.utils.get(j.guild.text_channels, name="weerwolf_channel")
-    print("3")
+    print("3,5")
     if not weerwolfmessage:
         print("5")
         await weerwolf_channel.send(
