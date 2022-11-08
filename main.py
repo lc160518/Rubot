@@ -541,6 +541,7 @@ async def heks(b):
     weerwolf_slachtoffer = await client.fetch_user(deathlist[0])
 
     if not heksmessage:
+        print("heksmessage")
         await heks_channel.send(
             f"Hallo geniepige gemenerik, wil je {weerwolf_slachtoffer.name} redden,"
             f" iemand anders vermoorden of lekker rustig blijven genieten van het moment?")
@@ -560,8 +561,10 @@ async def heks(b):
 
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
+    print("check")
 
     if msg.content.startswith("red"):
+        print("red")
         if not levensdrank:
             heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
             deathlist.remove(weerwolf_slachtoffer)
@@ -571,6 +574,7 @@ async def heks(b):
             await heks_channel.send("Je hebt geen levensdrank meer...")
 
     if msg.content.startswith("dood"):
+        print("dood")
         heks_channel.send(f"{weerwolf_slachtoffer.name} is gedood")
         if not gif:
             for i in range(len(players)):
@@ -584,6 +588,7 @@ async def heks(b):
             await heks_channel.send("Je heb geen gif meer...")
 
     if msg.content.startswith("ik geniet"):
+        print("ik geniet")
         await heks_channel.send("Een goede keuze is gemaakt.")
         heks_done = True
 
