@@ -954,7 +954,7 @@ async def dag(r):
     override = discord.PermissionOverwrite()
     override.send_messages = True
     for i in playerIdList:
-        member = client.fetch_user(playerIdList[i])
+        member = await client.fetch_user(playerIdList[i])
         await main_channel.set_permissions(member, overwrite=override)
 
     await dood(r)
@@ -1018,12 +1018,6 @@ async def permissies(r):
             heks_channel = discord.utils.get(r.guild.text_channels, name="heks_channel")
             heksor = await client.fetch_user(e)
             await heks_channel.set_permissions(heksor, overwrite=override)
-
-        if "Jager" == players[e]:
-            print(f"<@{e}> is Jager")
-            jager_channel = discord.utils.get(r.guild.text_channels, name="jager_channel")
-            jageror = await client.fetch_user(e)
-            await jager_channel.set_permissions(jageror, overwrite=override)
 
         if "Het Onschuldige Meisje" == players[e]:
             print(f"<@{e}> is Het Onschuldige Meisje")
