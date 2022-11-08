@@ -71,6 +71,7 @@ potentie = True
 stemmen_done = False
 guild = None
 game_active = False
+dag_1 = False
 
 
 @client.event
@@ -87,6 +88,9 @@ async def on_message(message):
     if client.user == message.author:
         return
 
+    if message.content.startswith("wincon pls"):
+        await win_check(message)
+
     weerwolf_channel = discord.utils.get(message.guild.text_channels, name="weerwolf_channel")
     if message.channel == weerwolf_channel:
         await meisje(message)
@@ -94,17 +98,17 @@ async def on_message(message):
     if message.content.startswith("start weerwolven"):
         if not game_active:
             game_active = True
-            players.update({940137904670404619: "geen rol"}) #renee
+            players.update({940137904670404619: "geen rol"})  # renee
             alivePlayers.append(940137904670404619)
-            players.update({627172201082388500: "geen rol"}) #ik
+            players.update({627172201082388500: "geen rol"})  # ik
             alivePlayers.append(627172201082388500)
-            players.update({398769543482179585: "geen rol"}) #julian
+            players.update({398769543482179585: "geen rol"})  # julian
             alivePlayers.append(398769543482179585)
-            players.update({578908795103870990: "geen rol"}) #zylfrex
+            players.update({578908795103870990: "geen rol"})  # zylfrex
             alivePlayers.append(578908795103870990)
-            players.update({125979540924268544: "geen rol"}) #hannie
+            players.update({125979540924268544: "geen rol"})  # hannie
             alivePlayers.append(125979540924268544)
-            players.update({238670141653516298: "geen rol"}) #koen
+            players.update({238670141653516298: "geen rol"})  # koen
             alivePlayers.append(238670141653516298)
             await start(message)
 
@@ -118,6 +122,7 @@ async def on_message(message):
 
     if message.content.startswith("reveal"):
         await permissies(message)
+
 
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
@@ -269,6 +274,8 @@ async def dood(r):
 
     for victim in deathlist:
         await main_channel.send(f"<@{victim}> was een {players[victim]}")
+
+    await main_channel.send("Eventjes geduld s'il vous plaît.")
 
     if jager_id in deathlist:
         while not jager_slachtoffer:
@@ -660,17 +667,22 @@ async def stemmen(q):
     global tie_message
     global tie
     global tie_list
-    vermoord = None
     global stemmen_done
+    vermoord = None
+    print("stem functie is aanwezig")
 
     def check(m):
         return client.user != q.author \
                and m.content.startswith("!") \
                and m.guild == guild
 
+    if not stemmessage:
+        await main_channel.send(
+            "Heeft iemand nog iets verdachts gemerkt gisteravond? " 
+            "Bespreek met elkaar verdachte dingen en als je eruit bent, stem dan door !naam te doen!")
+
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
-    print("msg aight")
     if msg.content.startswith("!") and msg.channel == main_channel:
         if msg.author.name not in alGestemd:
             print("staat niet in algestemd")
@@ -684,7 +696,7 @@ async def stemmen(q):
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
         print("heeft iedereen gestemd?")
-        if len(votes) == len(alivePlayers):
+        if len(votes) == 1:
             print("jup")
             for i in votes:
                 if i not in votes_dict:
@@ -728,7 +740,8 @@ async def stemmen(q):
                 tie_list = []
                 tie_message = "Het is gelijkspel tussen"
             else:
-                await main_channel.send(f"{vermoord.name} is opgehangen!")
+                ded = await client.fetch_user(vermoord)
+                await main_channel.send(f"{ded.name} is opgehangen!")
                 deathlist.append(vermoord)
                 stemmen_done = True
                 votes_dict = {}
@@ -924,7 +937,6 @@ async def elke_nacht(k):
         await heks(k)
 
 
-
 async def dag(r):
     global players
     playerIdList = list(players)
@@ -944,15 +956,28 @@ async def dag(r):
     print("dones gereset")
 
     while not stemmen_done:
+        print("stemmen is idd niet done")
         await stemmen(r)
     print("gestemd")
+
+    while not speech_done:
+       await monarchspeeches(r)
+
+    while not monarch_done:
+        await monarchvoting(r)
 
     await win_check(r)
 
 
 async def win_check(f):
     global game_active
+    livingRoles = []
+
     main_channel = discord.utils.get(f.guild.text_channels, name="main_channel")
+
+    for living in alivePlayers:
+        livingRoles.append(players[living])
+    print(livingRoles)
 
     if "Weerwolf" not in players.values():
         game_active = False
