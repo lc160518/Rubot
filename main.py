@@ -1019,6 +1019,12 @@ async def permissies(r):
             heksor = await client.fetch_user(e)
             await heks_channel.set_permissions(heksor, overwrite=override)
 
+        if "Jager" == players[e]:
+            print(f"<@{e}> is Jager")
+            jager_channel = discord.utils.get(r.guild.text_channels, name="jager_channel")
+            jageror = await client.fetch_user(e)
+            await jager_channel.set_permissions(jageror, overwrite=override)
+
         if "Het Onschuldige Meisje" == players[e]:
             print(f"<@{e}> is Het Onschuldige Meisje")
             meisje_channel = discord.utils.get(r.guild.text_channels, name="meisje_channel")
