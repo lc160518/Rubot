@@ -145,7 +145,7 @@ async def on_message(message):
 
 
 created_channels = []
-possible_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
+possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
                      "jager_channel",
                      "cupido_channel", "meisje_channel", "dood_channel"]
 
@@ -261,7 +261,7 @@ async def dood(r):
     global alivePlayers
     global guild
 
-    all_channels = ["main_channel", "weerwolf_channel", "burger_channel", "ziener_channel", "heks_channel",
+    all_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
                     "jager_channel", "cupido_channel", "meisje_channel", "dood_channel"]
 
     if len(lovers) == 2:
@@ -936,12 +936,6 @@ async def permissies(r):
             weerwolf_channel = discord.utils.get(r.guild.text_channels, name="weerwolf_channel")
             weerwolfor = await client.fetch_user(e)
             await weerwolf_channel.set_permissions(weerwolfor, overwrite=override)
-
-        if "Burger" == players[e]:
-            print(f"<@{e}> is Burger")
-            burger_channel = discord.utils.get(r.guild.text_channels, name="burger_channel")
-            burger = await client.fetch_user(e)
-            await burger_channel.set_permissions(burger, overwrite=override)
 
         if "Ziener" == players[e]:
             print(f"<@{e}> is Ziener")
