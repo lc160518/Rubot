@@ -572,7 +572,7 @@ async def weerwolf(j):
                 deathlist.append(het_slachtoffer)
                 print("50")
                 print(deathlist)
-                print("51")
+                print("51,5")
                 weerwolf_done = True
                 print("52")
                 slachtoffers_dict = {}
