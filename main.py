@@ -570,6 +570,7 @@ async def heks(b):
             heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
             deathlist.remove(weerwolf_slachtoffer)
             heks_done = True
+            levensdrank = True
         else:
             await heks_channel.send("Je hebt geen levensdrank meer...")
 
@@ -582,6 +583,7 @@ async def heks(b):
                     await heks_channel.send(f"{lijk.name} is ook gedood")
                     deathlist.append(lijk)
             heks_done = True
+            gif = True
         else:
             await heks_channel.send("Je heb geen gif meer...")
 
@@ -718,7 +720,7 @@ async def monarchspeeches(p):
     await p.guild.create_voice_channel(name="speech_voice", reason="monarch speeches", overwrites=None)
     await main_channel.send("Ga nu allemaal in de speech_voice channel en geef jullie speeches op deze volgorde:")
     for i in range(0, len(potentiele_monarch)):
-        main_channel.send(f"{i + 1}. {potentiele_monarch.name}")
+        main_channel.send(f"{i + 1}. {potentiele_monarch[i].name}")
     await main_channel.send("Als de speeches klaar zijn stuur: \"klaar\"")
     if msg.content.startswith("klaar"):
         speech_done = True
