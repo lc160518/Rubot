@@ -28,6 +28,7 @@ playerNames = []
 alivePlayers = []
 rolesList = []
 lovers = []
+lovas = []
 already_joined_amount = 0
 testing = False
 done = None
@@ -50,6 +51,8 @@ monarch_dict = {}
 
 levensdrank = False
 gif = False
+
+gameStart = False
 
 monarch_message = False
 cupidomessage = False
@@ -79,6 +82,7 @@ async def on_message(message):
     global guild
     global game_active
     global created_channels
+    global players
 
     if client.user == message.author:
         return
@@ -88,26 +92,21 @@ async def on_message(message):
         await meisje(message)
 
     if message.content.startswith("start weerwolven"):
-        startc = 0
-        if startc == 0:
-            startc += 1
+        if not game_active:
+            game_active = True
+            players.update({940137904670404619: "geen rol"}) #renee
+            alivePlayers.append(940137904670404619)
+            players.update({627172201082388500: "geen rol"}) #ik
+            alivePlayers.append(627172201082388500)
+            players.update({398769543482179585: "geen rol"}) #julian
+            alivePlayers.append(398769543482179585)
+            players.update({578908795103870990: "geen rol"}) #zylfrex
+            alivePlayers.append(578908795103870990)
+            players.update({125979540924268544: "geen rol"}) #hannie
+            alivePlayers.append(125979540924268544)
+            players.update({238670141653516298: "geen rol"}) #koen
+            alivePlayers.append(238670141653516298)
             await start(message)
-
-    if message.content.startswith("heks tijd"):
-        players.update({398769543482179585: "Burger"})
-        players.update({627172201082388500: "Heks"})
-        alivePlayers.append(627172201082388500)
-        alivePlayers.append(398769543482179585)
-        deathlist.append(940137904670404619)
-        await heks(message)
-
-    if message.content.startswith("win check"):
-        players.update({398769543482179585: "hamburger"})
-        players.update({627172201082388500: "Burger"})
-        lovers.append(398769543482179585)
-        lovers.append(627172201082388500)
-
-        await win_check(message)
 
     if message.content.startswith("delete channels"):
         text_channel_list = []
@@ -117,39 +116,11 @@ async def on_message(message):
             if channel.name in created_channels:
                 await channel.delete()
 
-    if message.content.startswith("dood mij"):
-        guild = message.guild
-        players.update({message.author.id: "Jager"})
-        players.update({627172201082388500: "hamburger"})
-        alivePlayers.append(627172201082388500)
-        alivePlayers.append(398769543482179585)
-        deathlist.append(message.author.id)
-        await dood(message)
-
     if message.content.startswith("reveal"):
         await permissies(message)
 
-    if message.content.startswith("meesa cupido"):
-        cupidomessage = False
-        while len(lovers) < 2:
-            await cupido(message)
-
-    ziener_channel = discord.utils.get(message.guild.text_channels, name="ziener_channel")
-    if message.content.startswith("fifafofum"):
-        print("a")
-        ziener_done = False
-        players.update({message.author.id: "Ziener"})
-        players.update({398769543482179585: "Weerwolf"})
-        while not ziener_done:
-            print("---")
-            await ziener(message)
-            if not ziener_done:
-                await ziener_channel.send("Dat is geen speler.")
-
-
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
-                     "jager_channel",
                      "cupido_channel", "meisje_channel", "dood_channel"]
 
 
@@ -159,12 +130,13 @@ async def start(j):
 
     guild = j.guild
     bericht_gestuurd = j.channel
-    game_active = True
     await avond(j)
     await eerste_nacht(j)
     while game_active:
         await elke_nacht(j)
+        print("nacht done")
         await dag(j)
+        print("dag done")
 
     if not game_active:
         text_channel_list = []
@@ -238,8 +210,7 @@ async def playerjoining(s):
             elif len(players) >= 6:
                 await msg.channel.send("Er zijn genoeg spelerNames, rollen worden uitgedeelt!")
                 joining = False
-            break
-    role_selector()
+    await role_selector()
     print("Joining is done")
 
 
@@ -265,29 +236,42 @@ async def dood(r):
     global guild
 
     all_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
-                    "jager_channel", "cupido_channel", "meisje_channel", "dood_channel"]
+                    "cupido_channel", "meisje_channel", "dood_channel"]
 
-    if len(lovers) == 2:
-        if lovers[0] in deathlist:
-            deathlist.append(lovers[1])
-        if lovers[1] in deathlist:
-            deathlist.append(lovers[0])
+    print(lovers)
+    print(deathlist)
+    if lovers[0] in deathlist:
+        deathlist.append(lovers[1])
+    elif lovers[1] in deathlist:
+        deathlist.append(lovers[0])
+    print(deathlist)
 
     inverse_players = {value: key for key, value in players.items()}
 
     jager_id = inverse_players["Jager"]
     print(jager_id)
-    jager_user = await client.fetch_user(jager_id)
-    print(jager_user)
     main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
 
     playerIdList = list(players)
-
+    print(deathlist)
     jager_slachtoffer = False
     jager_message = False
-    while not jager_slachtoffer:
 
-        if jager_user in deathlist or jager_id in deathlist:
+    await main_channel.send("Het is dag in wakkerdam. Iedereen wordt wakker...")
+    if len(deathlist) == 1:
+        await main_channel.send(f"Behalve <@{deathlist[0]}>!!")
+
+    if len(deathlist) == 2:
+        await main_channel.send(f"Behalve <@{deathlist[0]}> en <@{deathlist[1]}>!!")
+
+    if len(deathlist) == 3:
+        await main_channel.send(f"Behalve <@{deathlist[0]}>, <@{deathlist[1]}> en <@{deathlist[2]}>!!")
+
+    for victim in deathlist:
+        await main_channel.send(f"<@{victim}> was een {players[victim]}")
+
+    if jager_id in deathlist:
+        while not jager_slachtoffer:
             if not jager_message:
                 await main_channel.send("Jager, wie wordt je slachtoffer?")
                 jager_message = True
@@ -308,20 +292,11 @@ async def dood(r):
                             deathlist.append(y)
                             jager_slachtoffer = True
 
-    await main_channel.send("Het is dag in wakkerdam. Iedereen wordt wakker...")
-    if len(deathlist) == 1:
-        await main_channel.send(f"Behalve<@{deathlist[0]}>!!")
-
-    if len(deathlist) == 2:
-        await main_channel.send(f"Behalve<@{deathlist[0]}> en <@{deathlist[1]}>!!")
-
     for victim in deathlist:
-        print(victim)
         alivePlayers.remove(victim)
         override = discord.PermissionOverwrite()
         override.view_channel = True
         override.send_messages = False
-        print(alivePlayers)
 
         players[victim] = "Dood"
         for i in range(0, len(all_channels)):
@@ -332,7 +307,7 @@ async def dood(r):
 
 
 # Gives each player a role. Returns a dict.
-def role_selector():
+async def role_selector():
     print(players)
     global rolesList
     rolesList = []
@@ -347,23 +322,27 @@ def role_selector():
     roles["Burger"] = len(players) - roles["Weerwolf"] - (len(roles) - 2)
 
     # maakt een lijst met de rollen en hoe vaak ze er zijn
-
     for role in roles:
         for g in range((int(roles[role]))):
             rolesList.append(role)
 
-    playerRoles = distribute_roles(players, rolesList)
+    playerRoles = await distribute_roles(players, rolesList)
     print(playerRoles)
 
 
 # Distributes roles from rolesList to players
-def distribute_roles(gamers, roles):
+async def distribute_roles(gamers, roles):
     playerNamesList = list(gamers)
 
     for j in range(0, len(gamers)):
         rNumber = random.randrange(len(roles))
         gamers[playerNamesList[j]] = roles[rNumber]
         del roles[rNumber]
+
+    for i in playerNamesList:
+        player = await client.fetch_user(i)
+        player_dm = await player.create_dm()
+        await player_dm.send(f"Je bent een {gamers[i]}.")
 
     return gamers
 
@@ -373,6 +352,7 @@ async def cupido(g):
     global cupidomessage
     global players
     global cupido_done
+    global lovas
 
     playerIdList = list(players)
 
@@ -390,19 +370,20 @@ async def cupido(g):
     if msg.channel == cupido_channel:
         for i in range(len(players)):
             lover = await client.fetch_user(playerIdList[i])
+            loverid = playerIdList[i]
             if lover.name.lower() in msg.content.lower():
-                if lover not in lovers:
-                    lovers.append(lover)
+                if loverid not in lovers:
+                    lovers.append(loverid)
+                    lovas.append(lover)
                     await cupido_channel.send(f"{lover.name} is now in love")
-                    print(lovers)
                 else:
                     await cupido_channel.send("Narcisten zijn niet toegestaan")
     if len(lovers) == 2:
-        await cupido_channel.send(f"{lovers[0].name} en {lovers[1].name} zijn nu elkaars geliefden.")
-        lover1_dm = await lovers[0].create_dm()
-        await lover1_dm.send(f"Jij en {lovers[1].name} zijn geliefden.")
-        lover2_dm = await lovers[1].create_dm()
-        await lover2_dm.send(f"Jij en {lovers[0].name} zijn geliefden.")
+        await cupido_channel.send(f"{lovas[0].name} en {lovas[1].name} zijn nu elkaars geliefden.")
+        lover1_dm = await lovas[0].create_dm()
+        await lover1_dm.send(f"Jij en {lovas[1].name} zijn geliefden.")
+        lover2_dm = await lovas[1].create_dm()
+        await lover2_dm.send(f"Jij en {lovas[0].name} zijn geliefden.")
         cupido_done = True
 
 
@@ -689,25 +670,22 @@ async def stemmen(q):
 
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
-
+    print("msg aight")
     if msg.content.startswith("!") and msg.channel == main_channel:
-        for i in range(0, len(weerwolven)):
-            y = await client.fetch_user(weerwolven[i])
-            if y.name.lower() in msg.content.lower():
-                await main_channel.send("Je kunt geen weerwolf vermoorden")
-                return
         if msg.author.name not in alGestemd:
+            print("staat niet in algestemd")
             for i in range(0, len(playerIdList)):
                 z = await client.fetch_user(playerIdList[i])
                 if z.name.lower() in msg.content.lower():
-                    votes.append(z)
+                    votes.append(playerIdList[i])
                     alGestemd.append(msg.author.name)
                     await main_channel.send(f"{msg.author.name} heeft op {z.name} gestemd")
         else:
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
-
+        print("heeft iedereen gestemd?")
         if len(votes) == len(alivePlayers):
+            print("jup")
             for i in votes:
                 if i not in votes_dict:
                     votes_dict.update({i: 1})
@@ -836,7 +814,7 @@ async def monarchvoting(k):
                 for i in range(0, len(playerIdList)):
                     z = await client.fetch_user(playerIdList[i])
                     if z.name.lower() in msg.content.lower():
-                        monarchvote.append(z)
+                        monarchvote.append(playerIdList[i])
                         alGestemd.append(msg.author.name)
         else:
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
@@ -946,6 +924,7 @@ async def elke_nacht(k):
         await heks(k)
 
 
+
 async def dag(r):
     global players
     playerIdList = list(players)
@@ -953,15 +932,20 @@ async def dag(r):
 
     override = discord.PermissionOverwrite()
     override.send_messages = True
+    print("dag gecalled")
     for i in range(0, len(playerIdList)):
         member = await client.fetch_user(playerIdList[i])
         await main_channel.set_permissions(member, overwrite=override)
+    print("mensen zouden moeten kunnen praten")
 
     await dood(r)
+    print("dod")
     reset_dones()
+    print("dones gereset")
 
     while not stemmen_done:
         await stemmen(r)
+    print("gestemd")
 
     await win_check(r)
 
