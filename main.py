@@ -235,8 +235,8 @@ async def playerjoining(s):
         if msg.content.startswith("disable joining"):
             if len(players) < 6:
                 await msg.channel.send("Er zijn niet genoeg spelers, mensen kunnen nog joinen!")
-            if len(players) >= 6:
-                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
+            elif len(players) >= 6:
+                await msg.channel.send("Er zijn genoeg spelerNames, rollen worden uitgedeelt!")
                 joining = False
             break
     role_selector()
@@ -1018,12 +1018,6 @@ async def permissies(r):
             heks_channel = discord.utils.get(r.guild.text_channels, name="heks_channel")
             heksor = await client.fetch_user(e)
             await heks_channel.set_permissions(heksor, overwrite=override)
-
-        if "Jager" == players[e]:
-            print(f"<@{e}> is Jager")
-            jager_channel = discord.utils.get(r.guild.text_channels, name="jager_channel")
-            jageror = await client.fetch_user(e)
-            await jager_channel.set_permissions(jageror, overwrite=override)
 
         if "Het Onschuldige Meisje" == players[e]:
             print(f"<@{e}> is Het Onschuldige Meisje")
