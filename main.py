@@ -387,7 +387,7 @@ async def cupido(g):
         for i in range(len(players)):
             lover = await client.fetch_user(playerIdList[i])
             if lover.name.lower() in msg.content.lower():
-                if lover.name.lower() not in lovers:
+                if lover not in lovers:
                     lovers.append(lover)
                     await cupido_channel.send(f"{lover.name} is now in love")
                     print(lovers)
