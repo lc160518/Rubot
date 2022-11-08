@@ -953,7 +953,7 @@ async def dag(r):
 
     override = discord.PermissionOverwrite()
     override.send_messages = True
-    for i in playerIdList:
+    for i in range(0, len(playerIdList)):
         member = await client.fetch_user(playerIdList[i])
         await main_channel.set_permissions(member, overwrite=override)
 
