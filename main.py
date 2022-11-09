@@ -112,6 +112,9 @@ async def on_message(message):
             alivePlayers.append(238670141653516298)
             await start(message)
 
+    if message.content.startswith("channels!"):
+        await create_channels(message)
+
     if message.content.startswith("delete channels"):
         text_channel_list = []
         for channel in message.guild.text_channels:
