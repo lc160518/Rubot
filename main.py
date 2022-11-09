@@ -33,8 +33,9 @@ already_joined_amount = 0
 testing = False
 done = None
 de_monarch = None
-potentiele_monarch = [721823708708339754]
+potentiele_monarch = []
 jager_id = None
+winnaars = None
 
 weerwolven = []
 votes = []
@@ -102,18 +103,6 @@ async def on_message(message):
     if message.content.startswith("start weerwolven"):
         if not game_active:
             game_active = True
-            players.update({940137904670404619: "geen rol"})  # renee
-            alivePlayers.append(940137904670404619)
-            players.update({627172201082388500: "geen rol"})  # ik
-            alivePlayers.append(627172201082388500)
-            players.update({721823708708339754: "geen rol"})  # julian
-            alivePlayers.append(721823708708339754)
-            players.update({578908795103870990: "geen rol"})  # zylfrex
-            alivePlayers.append(578908795103870990)
-            players.update({125979540924268544: "geen rol"})  # hannie
-            alivePlayers.append(125979540924268544)
-            players.update({238670141653516298: "geen rol"})  # koen
-            alivePlayers.append(238670141653516298)
             await start(message)
 
     if message.content.startswith("delete channels"):
@@ -136,6 +125,7 @@ possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks
 async def start(j):
     global guild
     global game_active
+    global winnaars
 
     guild = j.guild
     bericht_gestuurd = j.channel
@@ -153,6 +143,7 @@ async def start(j):
             if channel.name in created_channels:
                 await channel.delete()
     if not game_active:
+        await bericht_gestuurd.send(f"{winnaars} hebben gewonnen!!")
         await bericht_gestuurd.send("Wil je nog een keer spelen?")
 
         def check(m):
@@ -290,20 +281,20 @@ async def dood(r):
             msg.content = msg.content.lower()
 
             if msg.content.startswith("!"):
-                # if players[msg.author.id] == "Jager":
-                for y in playerIdList:
-                    mens = await client.fetch_user(y)
-                    if mens.name.lower() in msg.content:
-                        deathlist.append(y)
-                        if players[mens.id] != "Dood":
-                            await main_channel.send(
-                                f"De jager schiet <@{y}> door het hoofd."
-                                f" Iedereen weet dat lood je ware identiteit onthuld en dat "
-                                f"gebeurt nu ook. <@{y}> was {players[y]}.")
-                            jager_slachtoffer = True
-                        else:
-                            await main_channel.send(
-                                "Uhm... Ik weet niet hoe ik dit moet vertellen... \n Hij is al dood...")
+                if players[msg.author.id] == "Jager":
+                    for y in playerIdList:
+                        mens = await client.fetch_user(y)
+                        if mens.name.lower() in msg.content:
+                            deathlist.append(y)
+                            if players[mens.id] != "Dood":
+                                await main_channel.send(
+                                    f"De jager schiet <@{y}> door het hoofd."
+                                    f" Iedereen weet dat lood je ware identiteit onthuld en dat "
+                                    f"gebeurt nu ook. <@{y}> was {players[y]}.")
+                                jager_slachtoffer = True
+                            else:
+                                await main_channel.send(
+                                    "Uhm... Ik weet niet hoe ik dit moet vertellen... \n Hij is al dood...")
 
     await main_channel.send("Eventjes geduld s'il vous plaît.")
 
@@ -326,19 +317,22 @@ async def dood(r):
                         if opvolger.name in msg.content:
                             koning = living
 
-    for victim in deathlist:
-        alivePlayers.remove(victim)
-        deathlist.remove(victim)
+    for i in range(len(deathlist)):
         override = discord.PermissionOverwrite()
         override.view_channel = True
         override.send_messages = False
 
-        players[victim] = "Dood"
-        for i in range(0, len(all_channels)):
-            name = all_channels[i]
+        players[deathlist[i]] = "Dood"
+        for y in range(0, len(all_channels)):
+            name = all_channels[y]
             channel = discord.utils.get(r.guild.text_channels, name=name)
-            victor = await client.fetch_user(victim)
+            victor = await client.fetch_user(deathlist[i])
             await channel.set_permissions(victor, overwrite=override)
+
+        alivePlayers.remove(deathlist[i])
+        print(f"eerst was deathlist: {deathlist}")
+        deathlist.remove(deathlist[i])
+        print(f"daarna was deathlist: {deathlist}")
 
 
 # Gives each player a role. Returns a dict.
@@ -676,7 +670,7 @@ async def stemmen(q):
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
         print("heeft iedereen gestemd?")
-        if len(votes) == 1:  # len(alivePlayers):
+        if len(votes) == len(alivePlayers):
             print("jup")
             for i in votes:
                 if i not in votes_dict:
@@ -816,7 +810,7 @@ async def monarchvoting(k):
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
 
-        if len(monarchvote) == 1:  # len(alivePlayers):
+        if len(monarchvote) == len(alivePlayers):
             for i in monarchvote:
                 if i not in monarch_dict:
                     monarch_dict.update({i: 1})
@@ -884,7 +878,7 @@ def reset_dones():
     stemmen_done = False
     zienermessage = False
     heksmessage = False
-    zienermessage = False
+    weerwolfmessage = False
 
 
 async def avond(a):
@@ -940,10 +934,20 @@ async def dag(r):
     reset_dones()
     await dood(r)
 
+    await win_check(r)
+
+    if not game_active:
+        return
+
     while not stemmen_done:
         await stemmen(r)
 
     await dood(r)
+
+    await win_check(r)
+
+    if not game_active:
+        return
 
     while not speech_done:
         await monarchspeeches(r)
@@ -957,6 +961,7 @@ async def dag(r):
 async def win_check(f):
     global game_active
     global lovers
+    global winnaars
     livingRoles = []
 
     main_channel = discord.utils.get(f.guild.text_channels, name="main_channel")
@@ -967,19 +972,19 @@ async def win_check(f):
 
     if "Weerwolf" not in livingRoles:
         game_active = False
-        await main_channel.send("Het spel is gewonnen door de burgers!")
+        winnaars = "De Burgers"
         return
 
     if len(livingRoles) == 1 and livingRoles[0] == "Weerwolf":
         game_active = False
-        await main_channel.send("Het spel is gewonnen door de weerwolven!")
+        winnaars = "De Weerwolven"
         return
 
     if len(alivePlayers) == 2:
         if alivePlayers[0] == lovers[0] or alivePlayers[0] == lovers[1]:
             if alivePlayers[1] == lovers[0] or alivePlayers[1] == lovers[1]:
                 game_active = False
-                await main_channel.send("De geliefden winnen het spel!!")
+                winnaars = "De Geliefden"
 
 
 async def permissies(r):
