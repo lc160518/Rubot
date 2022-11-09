@@ -291,7 +291,7 @@ async def dood(r):
             msg.content = msg.content.lower()
 
             if msg.content.startswith("!"):
-                if players[msg.author] == "Jager":
+                if players[msg.author.id] == "Jager":
                     for y in playerIdList:
                         mens = await client.fetch_user(y)
                         if mens.name.lower() in msg.content:
