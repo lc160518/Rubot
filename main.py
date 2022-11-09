@@ -102,8 +102,8 @@ async def on_message(message):
             alivePlayers.append(940137904670404619)
             players.update({627172201082388500: "geen rol"})  # ik
             alivePlayers.append(627172201082388500)
-            players.update({398769543482179585: "geen rol"})  # julian
-            alivePlayers.append(398769543482179585)
+            players.update({721823708708339754: "geen rol"})  # julian
+            alivePlayers.append(721823708708339754)
             players.update({578908795103870990: "geen rol"})  # zylfrex
             alivePlayers.append(578908795103870990)
             players.update({125979540924268544: "geen rol"})  # hannie
@@ -268,10 +268,10 @@ async def dood(r):
         await main_channel.send(f"Behalve <@{deathlist[0]}>, <@{deathlist[1]}> en <@{deathlist[2]}>!!")
 
     if lovers[0] in deathlist and lovers[1] in deathlist:
-        main_channel.send(f"<@{lovers[0]}> en <@{lovers[1]}> waren geliefden")
+        await main_channel.send(f"<@{lovers[0]}> en <@{lovers[1]}> waren geliefden")
 
     for victim in deathlist:
-        await main_channel.send(f"<@{victim}> was een {players[victim]}")
+        await main_channel.send(f"<@{victim}> was {players[victim]}")
 
 
     await main_channel.send("Eventjes geduld s'il vous plaît.")
@@ -348,7 +348,7 @@ async def distribute_roles(gamers, roles):
     for i in playerNamesList:
         player = await client.fetch_user(i)
         player_dm = await player.create_dm()
-        await player_dm.send(f"Je bent een {gamers[i]}.")
+        await player_dm.send(f"Je bent {gamers[i]}.")
 
     return gamers
 
@@ -760,7 +760,6 @@ async def monarchspeeches(p):
 
     def check(m):
         return client.user != m.author \
-               and m.content.startswith("!") \
                and m.guild == guild
 
     await main_channel.send(
@@ -774,6 +773,7 @@ async def monarchspeeches(p):
                 await main_channel.send("Je staat al op de lijst.")
             else:
                 potentiele_monarch.append(msg.author)
+                await main_channel.send(f"<@{msg.author.id}> heeft (zo te zien) Koningklijk Bloed!")
         if msg.content.lower().startswith("genoeg!"):
             potentie = False
     await p.guild.create_voice_channel(name="speech_voice", reason="monarch speeches", overwrites=None)
