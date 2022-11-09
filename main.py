@@ -169,17 +169,19 @@ async def start(j):
 
 
 async def create_channels(s):
-    overwrites = {
-        s.guild.default_role: discord.PermissionOverwrite(view_channel=False)}
 
-    for e in range(0, len(possible_channels)):
-        await s.guild.create_text_channel(name=possible_channels[e], reason="startup", overwrites=overwrites)
-        created_channels.append(possible_channels[e])
+    if discord.utils.get(s.guild.text_channels, name="main_channel") is None:
+        overwrites = {
+            s.guild.default_role: discord.PermissionOverwrite(view_channel=False)}
 
-    main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
-    main_over = discord.PermissionOverwrite()
-    main_over.view_channel = True
-    await main_channel.set_permissions(s.guild.default_role, overwrite=main_over)
+        for e in range(0, len(possible_channels)):
+            await s.guild.create_text_channel(name=possible_channels[e], reason="startup", overwrites=overwrites)
+            created_channels.append(possible_channels[e])
+
+        main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
+        main_over = discord.PermissionOverwrite()
+        main_over.view_channel = True
+        await main_channel.set_permissions(s.guild.default_role, overwrite=main_over)
 
 
 async def playerjoining(s):
@@ -678,7 +680,7 @@ async def stemmen(q):
 
     if not stemmessage:
         await main_channel.send(
-            "Heeft iemand nog iets verdachts gemerkt gisteravond? " 
+            "Heeft iemand nog iets verdachts gemerkt gisteravond? "
             "Bespreek met elkaar verdachte dingen en als je eruit bent, stem dan door !naam te doen!")
 
     msg = await client.wait_for("message", check=check)
@@ -961,7 +963,7 @@ async def dag(r):
     print("gestemd")
 
     while not speech_done:
-       await monarchspeeches(r)
+        await monarchspeeches(r)
 
     while not monarch_done:
         await monarchvoting(r)
