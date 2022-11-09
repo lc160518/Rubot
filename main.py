@@ -243,22 +243,17 @@ async def dood(r):
     all_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
                     "cupido_channel", "meisje_channel", "dood_channel"]
 
-    print(lovers)
-    print(deathlist)
     if lovers[0] in deathlist:
         deathlist.append(lovers[1])
     elif lovers[1] in deathlist:
         deathlist.append(lovers[0])
-    print(deathlist)
 
     inverse_players = {value: key for key, value in players.items()}
 
     jager_id = inverse_players["Jager"]
-    print(jager_id)
     main_channel = discord.utils.get(r.guild.text_channels, name="main_channel")
 
     playerIdList = list(players)
-    print(deathlist)
     jager_slachtoffer = False
     jager_message = False
 
@@ -272,8 +267,12 @@ async def dood(r):
     if len(deathlist) == 3:
         await main_channel.send(f"Behalve <@{deathlist[0]}>, <@{deathlist[1]}> en <@{deathlist[2]}>!!")
 
+    if lovers[0] in deathlist and lovers[1] in deathlist:
+        main_channel.send(f"<@{lovers[0]}> en <@{lovers[1]}> waren geliefden")
+
     for victim in deathlist:
         await main_channel.send(f"<@{victim}> was een {players[victim]}")
+
 
     await main_channel.send("Eventjes geduld s'il vous plaît.")
 
