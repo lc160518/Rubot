@@ -764,25 +764,26 @@ async def monarchspeeches(p):
                and m.content.startswith("!") \
                and m.guild == guild
 
-    msg = await client.wait_for("message", check=check)
-    msg.content = msg.content.lower()
-
     await main_channel.send(
-        "Wie wil een poging wagen om Koning te worden? Geinteresseerden sturen \"ik zou koning willen worden\". "
+        "Wie wil een poging wagen om Koning te worden? Geinteresseerden sturen \"ik eis de monarchie op\". "
         "als iedereen erin zit stuurd: Genoeg!")
     while potentie:
-        if msg.content.lower().startswith("ik zou koning willen worden"):
+        msg = await client.wait_for("message", check=check)
+        msg.content = msg.content.lower()
+        if msg.content.lower().startswith("ik eis de monarchie op"):
             if msg.author in potentiele_monarch:
                 await main_channel.send("Je staat al op de lijst.")
             else:
                 potentiele_monarch.append(msg.author)
-        if msg.content.lower().startswith("Genoeg!"):
+        if msg.content.lower().startswith("genoeg!"):
             potentie = False
     await p.guild.create_voice_channel(name="speech_voice", reason="monarch speeches", overwrites=None)
     await main_channel.send("Ga nu allemaal in de speech_voice channel en geef jullie speeches op deze volgorde:")
     for i in range(0, len(potentiele_monarch)):
         main_channel.send(f"{i + 1}. {potentiele_monarch[i].name}")
     await main_channel.send("Als de speeches klaar zijn stuur: \"klaar\"")
+    msg = await client.wait_for("message", check=check)
+    msg.content = msg.content.lower()
     if msg.content.startswith("klaar"):
         speech_done = True
         speech_voice = discord.utils.get(p.guild.voice_channels, name="speech_voice")
