@@ -33,7 +33,7 @@ already_joined_amount = 0
 testing = False
 done = None
 de_monarch = None
-potentiele_monarch = []
+potentiele_monarch = [721823708708339754]
 
 weerwolven = []
 votes = []
@@ -188,14 +188,14 @@ async def playerjoining(s):
     global alivePlayers
 
     main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
-    await main_channel.send("Stuur \"ik\" om mee te doen!")
+    await main_channel.send("Stuur \"ik\" om mee te doen! Als iedereen meedoet, stuur \"iedereen doet mee\"!")
     joining = True
 
     while joining:
         def check(m):
             return client.user != s.author \
                    and m.content == "ik" \
-                   or m.content == "disable joining" \
+                   or m.content == "iedereen doet mee" \
                    and m.guild == guild
 
         msg = await client.wait_for("message", check=check)
@@ -209,11 +209,11 @@ async def playerjoining(s):
         elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> already joined")
 
-        if msg.content.startswith("disable joining"):
+        if msg.content.startswith("iedereen doet mee"):
             if len(players) < 6:
                 await msg.channel.send("Er zijn niet genoeg spelers, mensen kunnen nog joinen!")
             elif len(players) >= 6:
-                await msg.channel.send("Er zijn genoeg spelerNames, rollen worden uitgedeelt!")
+                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
                 joining = False
     await role_selector()
     print("Joining is done")
@@ -239,6 +239,7 @@ async def dood(r):
     global deathlist
     global alivePlayers
     global guild
+    global stemmen_done
 
     all_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
                     "cupido_channel", "meisje_channel", "dood_channel"]
@@ -257,24 +258,22 @@ async def dood(r):
     jager_slachtoffer = False
     jager_message = False
 
-    await main_channel.send("Het is dag in wakkerdam. Iedereen wordt wakker...")
-    if len(deathlist) == 1:
-        await main_channel.send(f"Behalve <@{deathlist[0]}>!!")
+    if not stemmen_done:
+        await main_channel.send("Het is dag in wakkerdam. Iedereen wordt wakker...")
+        if len(deathlist) == 1:
+            await main_channel.send(f"Behalve <@{deathlist[0]}>!!")
 
-    if len(deathlist) == 2:
-        await main_channel.send(f"Behalve <@{deathlist[0]}> en <@{deathlist[1]}>!!")
+        if len(deathlist) == 2:
+            await main_channel.send(f"Behalve <@{deathlist[0]}> en <@{deathlist[1]}>!!")
 
-    if len(deathlist) == 3:
-        await main_channel.send(f"Behalve <@{deathlist[0]}>, <@{deathlist[1]}> en <@{deathlist[2]}>!!")
+        if len(deathlist) == 3:
+            await main_channel.send(f"Behalve <@{deathlist[0]}>, <@{deathlist[1]}> en <@{deathlist[2]}>!!")
 
-    if lovers[0] in deathlist and lovers[1] in deathlist:
-        await main_channel.send(f"<@{lovers[0]}> en <@{lovers[1]}> waren geliefden")
+        if lovers[0] in deathlist and lovers[1] in deathlist:
+            await main_channel.send(f"<@{lovers[0]}> en <@{lovers[1]}> waren geliefden")
 
     for victim in deathlist:
         await main_channel.send(f"<@{victim}> was {players[victim]}")
-
-
-    await main_channel.send("Eventjes geduld s'il vous plaît.")
 
     if jager_id in deathlist:
         while not jager_slachtoffer:
@@ -284,19 +283,24 @@ async def dood(r):
 
             def check(m):
                 return client.user != m.author \
-                       and m.content.startswith("!") \
                        and m.guild == guild
 
             msg = await client.wait_for("message", check=check)
             msg.content = msg.content.lower()
 
             if msg.content.startswith("!"):
-                if players[msg.author.id] == "Jager":
-                    for y in playerIdList:
-                        mens = await client.fetch_user(y)
-                        if mens.name.lower() in msg.content:
-                            deathlist.append(y)
-                            jager_slachtoffer = True
+                # if players[msg.author.id] == "Jager":
+                for y in playerIdList:
+                    mens = await client.fetch_user(y)
+                    if mens.name.lower() in msg.content:
+                        deathlist.append(y)
+                        await main_channel.send(
+                            f"De jager schiet <@{y}> door het hoofd."
+                            f" Iedereen weet dat lood je ware identiteit onthuld en dat "
+                            f"gebeurt nu ook. <@{y}> was {players[y]}.")
+                        jager_slachtoffer = True
+
+    await main_channel.send("Eventjes geduld s'il vous plaît.")
 
     for victim in deathlist:
         alivePlayers.remove(victim)
@@ -677,7 +681,7 @@ async def stemmen(q):
 
     if not stemmessage:
         await main_channel.send(
-            "Heeft iemand nog iets verdachts gemerkt gisteravond? " 
+            "Heeft iemand nog iets verdachts gemerkt gisteravond? "
             "Bespreek met elkaar verdachte dingen en als je eruit bent, stem dan door !naam te doen!")
 
     msg = await client.wait_for("message", check=check)
@@ -695,7 +699,7 @@ async def stemmen(q):
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
         print("heeft iedereen gestemd?")
-        if len(votes) == 1:
+        if len(votes) == 1:  # len(alivePlayers):
             print("jup")
             for i in votes:
                 if i not in votes_dict:
@@ -755,7 +759,7 @@ async def monarchspeeches(p):
     global potentiele_monarch
     global potentie
     global speech_done
-
+    spechniklaar = True
     main_channel = discord.utils.get(p.guild.text_channels, name="main_channel")
 
     def check(m):
@@ -764,7 +768,7 @@ async def monarchspeeches(p):
 
     await main_channel.send(
         "Wie wil een poging wagen om Koning te worden? Geinteresseerden sturen \"ik eis de monarchie op\". "
-        "als iedereen erin zit stuurd: Genoeg!")
+        "als iedereen erin zit stuur: Genoeg!")
     while potentie:
         msg = await client.wait_for("message", check=check)
         msg.content = msg.content.lower()
@@ -772,21 +776,24 @@ async def monarchspeeches(p):
             if msg.author in potentiele_monarch:
                 await main_channel.send("Je staat al op de lijst.")
             else:
-                potentiele_monarch.append(msg.author)
+                potentiele_monarch.append(msg.author.id)
                 await main_channel.send(f"<@{msg.author.id}> heeft (zo te zien) Koningklijk Bloed!")
-        if msg.content.lower().startswith("genoeg!"):
+        if msg.content.lower().startswith("genoeg"):
             potentie = False
-    await p.guild.create_voice_channel(name="speech_voice", reason="monarch speeches", overwrites=None)
+    await p.guild.create_voice_channel(name="speech_voice", reason="monarch speeches")
     await main_channel.send("Ga nu allemaal in de speech_voice channel en geef jullie speeches op deze volgorde:")
     for i in range(0, len(potentiele_monarch)):
-        main_channel.send(f"{i + 1}. {potentiele_monarch[i].name}")
+        monchar = await client.fetch_user(potentiele_monarch[i])
+        await main_channel.send(f"{i + 1}. {monchar.name}")
     await main_channel.send("Als de speeches klaar zijn stuur: \"klaar\"")
-    msg = await client.wait_for("message", check=check)
-    msg.content = msg.content.lower()
-    if msg.content.startswith("klaar"):
-        speech_done = True
-        speech_voice = discord.utils.get(p.guild.voice_channels, name="speech_voice")
-        speech_voice.delete()
+    while spechniklaar:
+        msg = await client.wait_for("message", check=check)
+        msg.content = msg.content.lower()
+        if msg.content.startswith("klaar"):
+            speech_done = True
+            speech_voice = discord.utils.get(p.guild.voice_channels, name="speech_voice")
+            await speech_voice.delete()
+            spechniklaar = False
 
 
 async def monarchvoting(k):
@@ -817,8 +824,7 @@ async def monarchvoting(k):
 
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
-
-    if msg.content.startswith("!") and msg.channel == main_channel:
+    if msg.channel == main_channel:
         if msg.author.name not in alGestemd:
             if msg.author.name.lower() in msg.content.lower():
                 await main_channel.send(f"{msg.author.name} je kan niet op jezelf stemmen")
@@ -833,7 +839,7 @@ async def monarchvoting(k):
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
 
-        if len(monarchvote) == len(alivePlayers):
+        if len(monarchvote) == 1:  # len(alivePlayers):
             for i in monarchvote:
                 if i not in monarch_dict:
                     monarch_dict.update({i: 1})
@@ -875,7 +881,8 @@ async def monarchvoting(k):
                 tie_list = []
                 tie_message = "Het is gelijkspel tussen"
             else:
-                await main_channel.send(f"{koning.name} is gekroond!")
+                kronig = await client.fetch_user(koning)
+                await main_channel.send(f"{kronig.name} is gekroond!")
                 de_monarch = koning
                 monarch_done = True
                 monarch_dict = {}
@@ -889,17 +896,11 @@ def reset_dones():
     global ziener_done
     global weerwolf_done
     global heks_done
-    global speech_done
-    global monarch_done
-    global potentie
     global stemmen_done
 
     ziener_done = False
     weerwolf_done = False
     heks_done = False
-    speech_done = False
-    monarch_done = False
-    potentie = True
     stemmen_done = False
 
 
@@ -950,18 +951,20 @@ async def dag(r):
         await main_channel.set_permissions(member, overwrite=override)
     print("mensen zouden moeten kunnen praten")
 
-    await dood(r)
-    print("dod")
     reset_dones()
     print("dones gereset")
+    await dood(r)
+    print("dod")
 
     while not stemmen_done:
         print("stemmen is idd niet done")
         await stemmen(r)
     print("gestemd")
 
+    await dood(r)
+
     while not speech_done:
-       await monarchspeeches(r)
+        await monarchspeeches(r)
 
     while not monarch_done:
         await monarchvoting(r)
