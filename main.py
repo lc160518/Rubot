@@ -626,8 +626,8 @@ async def heks(b):
     if msg.content.startswith("red"):
         print("red")
         if not levensdrank:
-            heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
-            deathlist.remove(weerwolf_slachtoffer)
+            await heks_channel.send(f"{weerwolf_slachtoffer.name} is gered!")
+            deathlist.remove(deathlist[0])
             heks_done = True
             levensdrank = True
         else:
