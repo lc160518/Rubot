@@ -74,6 +74,9 @@ guild = None
 game_active = False
 dag_1 = False
 
+heksAlive = True
+zienerAlive = True
+
 
 @client.event
 async def on_message(message):
@@ -140,9 +143,7 @@ async def start(j):
     await eerste_nacht(j)
     while game_active:
         await elke_nacht(j)
-        print("nacht done")
         await dag(j)
-        print("dag done")
 
     if not game_active:
         text_channel_list = []
@@ -217,7 +218,6 @@ async def playerjoining(s):
                 await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
                 joining = False
     await role_selector()
-    print("Joining is done")
 
 
 async def pre_game(r):
@@ -874,11 +874,17 @@ def reset_dones():
     global weerwolf_done
     global heks_done
     global stemmen_done
+    global heksmessage
+    global weerwolfmessage
+    global zienermessage
 
     ziener_done = False
     weerwolf_done = False
     heks_done = False
     stemmen_done = False
+    zienermessage = False
+    heksmessage = False
+    zienermessage = False
 
 
 async def avond(a):
@@ -896,6 +902,8 @@ async def eerste_nacht(j):
 
 async def elke_nacht(k):
     global players
+    global heksAlive
+    global zienerAlive
     playerIdList = list(players)
     main_channel = discord.utils.get(k.guild.text_channels, name="main_channel")
 
@@ -904,15 +912,17 @@ async def elke_nacht(k):
     for i in range(0, len(playerIdList)):
         member = await client.fetch_user(playerIdList[i])
         await main_channel.set_permissions(member, overwrite=override)
-    print(ziener_done)
-    while not ziener_done:
-        await ziener(k)
-    print(weerwolf_done)
+
+    if zienerAlive:
+        while not ziener_done:
+            await ziener(k)
+
     while not weerwolf_done:
         await weerwolf(k)
-    print(heks_done)
-    while not heks_done:
-        await heks(k)
+
+    if heksAlive:
+        while not heks_done:
+            await heks(k)
 
 
 async def dag(r):
@@ -922,21 +932,16 @@ async def dag(r):
 
     override = discord.PermissionOverwrite()
     override.send_messages = True
-    print("dag gecalled")
+
     for i in range(0, len(playerIdList)):
         member = await client.fetch_user(playerIdList[i])
         await main_channel.set_permissions(member, overwrite=override)
-    print("mensen zouden moeten kunnen praten")
 
     reset_dones()
-    print("dones gereset")
     await dood(r)
-    print("dod")
 
     while not stemmen_done:
-        print("stemmen is idd niet done")
         await stemmen(r)
-    print("gestemd")
 
     await dood(r)
 
@@ -951,32 +956,30 @@ async def dag(r):
 
 async def win_check(f):
     global game_active
+    global lovers
     livingRoles = []
 
     main_channel = discord.utils.get(f.guild.text_channels, name="main_channel")
 
     for living in alivePlayers:
-        livingRoles.append(players[living])
-    print(livingRoles)
+        if players[living] not in livingRoles:
+            livingRoles.append(players[living])
 
-    if "Weerwolf" not in players.values():
+    if "Weerwolf" not in livingRoles:
         game_active = False
         await main_channel.send("Het spel is gewonnen door de burgers!")
         return
 
-    if len(set(players.values())) == 1:
+    if len(livingRoles) == 1 and livingRoles[0] == "Weerwolf":
         game_active = False
         await main_channel.send("Het spel is gewonnen door de weerwolven!")
         return
 
-    listplayers = list(players)
-    if "Weerwolf" in players.values() and len(listplayers) == 2:
-        game_active = False
-        for e in range(0, len(lovers)):
-            if lovers[e] in players:
+    if len(alivePlayers) == 2:
+        if alivePlayers[0] == lovers[0] or alivePlayers[0] == lovers[1]:
+            if alivePlayers[1] == lovers[0] or alivePlayers[1] == lovers[1]:
                 game_active = False
-                await main_channel.send("Het spel is gewonnen door de geliefden!")
-                return
+                await main_channel.send("De geliefden winnen het spel!!")
 
 
 async def permissies(r):
