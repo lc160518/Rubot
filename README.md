@@ -9,3 +9,5 @@ gebruik namen die makkelijk te typen zijn want dat is fijner
 
 Het is netzoals in weerwolven irl turn based dus op het begin wordt nog neit gezegd wat je moet doen.
 wacht dan op verdere instructies van de bot
+
+soms doet de bot niks als veel mensen te gelijk sturen, stuur dna nog een keer
