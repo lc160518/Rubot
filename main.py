@@ -321,7 +321,6 @@ async def dood(r):
         override = discord.PermissionOverwrite()
         override.view_channel = True
         override.send_messages = False
-
         players[deathlist[i]] = "Dood"
         for y in range(0, len(all_channels)):
             name = all_channels[y]
