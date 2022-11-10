@@ -1,4 +1,4 @@
-- [ ] requirements.txt
+- [X] requirements.txt
 
 Setup
 - [X] start functie --> kijkt hoeveel mensen mee doen en vertelt welke rollen meedoen. (als tijd over kan speler de pool aanpassen)
