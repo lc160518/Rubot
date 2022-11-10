@@ -111,7 +111,6 @@ async def on_message(message):
             await start(message)
 
 
-
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
                      "cupido_channel", "meisje_channel", "dood_channel"]
@@ -319,12 +318,8 @@ async def dood(r):
             channel = discord.utils.get(r.guild.text_channels, name=name)
             victor = await client.fetch_user(deathlist[i])
             await channel.set_permissions(victor, overwrite=override)
-    x = len(deathlist)
-    for i in range(0, x):
-        alivePlayers.remove(deathlist[i])
-        deathlist.remove(deathlist[i])
 
-
+    deathlist = []
 
 
 # Gives each player a role. Returns a dict.
@@ -604,7 +599,7 @@ async def heks(b):
                             gif = True
                     else:
                         await heks_channel.send(
-                                "Uhm... Ik weet niet hoe ik dit moet vertellen... \n Hij is al dood...")
+                            "Uhm... Ik weet niet hoe ik dit moet vertellen... \n Hij is al dood...")
         else:
             await heks_channel.send("Je heb geen gif meer...")
 
@@ -950,6 +945,7 @@ async def dag(r):
         await monarchvoting(r)
 
     win_check()
+
 
 def win_check():
     global game_active
