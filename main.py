@@ -319,10 +319,8 @@ async def dood(r):
             channel = discord.utils.get(r.guild.text_channels, name=name)
             victor = await client.fetch_user(deathlist[i])
             await channel.set_permissions(victor, overwrite=override)
-    x = len(deathlist)
-    for i in range(0, x):
-        alivePlayers.remove(deathlist[i])
-        deathlist.remove(deathlist[i])
+
+    deathlist = []
 
 
 
