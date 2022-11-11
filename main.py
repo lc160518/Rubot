@@ -36,7 +36,6 @@ de_monarch = None
 potentiele_monarch = []
 jager_id = None
 winnaars = None
-koning = None
 
 weerwolven = []
 votes = []
@@ -94,32 +93,24 @@ async def on_message(message):
     if client.user == message.author:
         return
 
-    print("test1")
     weerwolf_channel = discord.utils.get(message.guild.text_channels, name="weerwolf_channel")
     if message.channel == weerwolf_channel:
-        print("test2")
-        meisje_channel = discord.utils.get(message.guild.text_channels, name="meisje_channel")
-        g = message.content
-        await meisje_channel.send(g)
-
-    if message.content.startswith("start weerwolven"):
-        if not game_active:
-            game_active = True
-            await start(message)
+        await meisje(message)
 
     if message.content.startswith("delete channels"):
         text_channel_list = []
         for channel in message.guild.text_channels:
             text_channel_list.append(channel)
         for channel in text_channel_list:
-            if channel.name in created_channels:
+            if channel.name in possible_channels:
                 await channel.delete()
 
-    if message.content.startswith("reveal"):
-        await permissies(message)
+    if message.content.startswith("start weerwolven"):
+        if not game_active:
+            game_active = True
+            await start(message)
 
-    if message.content.startswith("channels"):
-        await create_channels(message)
+
 
 created_channels = []
 possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
@@ -174,9 +165,6 @@ async def create_channels(s):
         created_channels.append(possible_channels[e])
 
     main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
-    main_over = discord.PermissionOverwrite()
-    main_over.view_channel = True
-    await main_channel.set_permissions(s.guild.default_role, overwrite=main_over)
 
 
 async def playerjoining(s):
@@ -192,7 +180,6 @@ async def playerjoining(s):
         def check(m):
             return client.user != s.author \
                    and m.content == "ik" \
-                   or m.content == "Ik" \
                    or m.content == "iedereen doet mee" \
                    and m.guild == guild
 
@@ -211,7 +198,7 @@ async def playerjoining(s):
             if len(players) < 6:
                 await msg.channel.send("Er zijn niet genoeg spelers, mensen kunnen nog joinen!")
             elif len(players) >= 6:
-                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeel(dt)!")
+                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeeldpl!")
                 joining = False
     await role_selector()
 
@@ -239,9 +226,6 @@ async def dood(r):
     global stemmen_done
     global jager_id
     global koning
-    global heksAlive
-    global zienerAlive
-
     nieuwekoning = False
 
     all_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
@@ -329,12 +313,6 @@ async def dood(r):
         override = discord.PermissionOverwrite()
         override.view_channel = True
         override.send_messages = False
-
-        if players[i] == "Heks":
-            heksAlive = False
-        if players[i] == "Ziener":
-            zienerAlive = False
-
         players[deathlist[i]] = "Dood"
         for y in range(0, len(all_channels)):
             name = all_channels[y]
@@ -345,6 +323,8 @@ async def dood(r):
     for i in range(0, x):
         alivePlayers.remove(deathlist[i])
         deathlist.remove(deathlist[i])
+
+
 
 
 # Gives each player a role. Returns a dict.
@@ -402,7 +382,8 @@ async def cupido(g):
 
     cupido_channel = discord.utils.get(g.guild.text_channels, name="cupido_channel")
     if not cupidomessage:
-        await cupido_channel.send("Cupido, wie wil jij koppelen?")
+        await cupido_channel.send("Cupido, wie wil jij koppelen? Doe dat met !naam in twee verschillende berichten."
+                                  " Dus eerst geliefde 1 in een bericht en dan geliefde 2 in het tweede bericht.")
         cupidomessage = True
 
     def check(m):
@@ -481,7 +462,7 @@ async def weerwolf(j):
             if "Weerwolf" == players[i]:
                 weerwolven.append(g.id)
         await weerwolf_channel.send(
-            "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben!")
+            "Hallo wolfjes, wordt het met elkaar eens wie je dood wilt hebben! Doe dat met !naam.")
         weerwolfmessage = True
 
     def check(m):
@@ -623,13 +604,18 @@ async def heks(b):
                             gif = True
                     else:
                         await heks_channel.send(
-                            "Uhm... Ik weet niet hoe ik dit moet vertellen... \n Hij is al dood...")
+                                "Uhm... Ik weet niet hoe ik dit moet vertellen... \n Hij is al dood...")
         else:
-            await heks_channel.send("Je hebt geen gif meer...")
+            await heks_channel.send("Je heb geen gif meer...")
 
     if msg.content.startswith("ik geniet"):
         await heks_channel.send("Een goede keuze is gemaakt.")
         heks_done = True
+
+
+async def meisje(x):
+    meisje_channel = discord.utils.get(x.guild.text_channels, name="meisje_channel")
+    await meisje_channel.send(x.content)
 
 
 async def stemmen(q):
@@ -646,7 +632,6 @@ async def stemmen(q):
     global tie_list
     global stemmen_done
     global monarchvote
-    global stemmessage
     global koning
     vermoord = None
     print("stem functie is aanwezig")
@@ -660,7 +645,6 @@ async def stemmen(q):
         await main_channel.send(
             "Heeft iemand nog iets verdachts gemerkt gisteravond? "
             "Bespreek met elkaar verdachte dingen en als je eruit bent, stem dan door !naam te doen!")
-        stemmessage = True
 
     msg = await client.wait_for("message", check=check)
     msg.content = msg.content.lower()
@@ -795,7 +779,7 @@ async def monarchvoting(k):
     global koning
 
     if not monarch_message:
-        await main_channel.send("Stem nu allemaal op je favoriete koning.")
+        await main_channel.send("Stem nu allemaal op je favoriete koning. Doe dat met !naam")
         monarch_message = True
 
     def check(m):
@@ -807,11 +791,15 @@ async def monarchvoting(k):
     msg.content = msg.content.lower()
     if msg.channel == main_channel:
         if msg.author.name not in alGestemd:
-            for i in range(0, len(playerIdList)):
-                z = await client.fetch_user(playerIdList[i])
-                if z.name.lower() in msg.content.lower():
-                    monarchvote.append(playerIdList[i])
-                    alGestemd.append(msg.author.name)
+            if msg.author.name.lower() in msg.content.lower():
+                await main_channel.send(f"{msg.author.name} je kan niet op jezelf stemmen")
+                return
+            else:
+                for i in range(0, len(playerIdList)):
+                    z = await client.fetch_user(playerIdList[i])
+                    if z.name.lower() in msg.content.lower():
+                        monarchvote.append(playerIdList[i])
+                        alGestemd.append(msg.author.name)
         else:
             await main_channel.send(f"{msg.author.name} je hebt al gestemd.")
             return
@@ -940,7 +928,7 @@ async def dag(r):
     reset_dones()
     await dood(r)
 
-    await win_check()
+    win_check()
 
     if not game_active:
         return
@@ -950,7 +938,7 @@ async def dag(r):
 
     await dood(r)
 
-    await win_check()
+    win_check()
 
     if not game_active:
         return
@@ -961,10 +949,9 @@ async def dag(r):
     while not monarch_done:
         await monarchvoting(r)
 
-    await win_check()
+    win_check()
 
-
-async def win_check():
+def win_check():
     global game_active
     global lovers
     global winnaars
@@ -997,31 +984,26 @@ async def permissies(r):
 
     for e in players:
         if "Cupido" == players[e]:
-            print(f"<@{e}> is cupido")
             cupido_channel = discord.utils.get(r.guild.text_channels, name="cupido_channel")
             cupidor = await client.fetch_user(e)
             await cupido_channel.set_permissions(cupidor, overwrite=override)
 
         if "Weerwolf" == players[e]:
-            print(f"<@{e}> is weerwolv")
             weerwolf_channel = discord.utils.get(r.guild.text_channels, name="weerwolf_channel")
             weerwolfor = await client.fetch_user(e)
             await weerwolf_channel.set_permissions(weerwolfor, overwrite=override)
 
         if "Ziener" == players[e]:
-            print(f"<@{e}> is Ziener")
             ziener_channel = discord.utils.get(r.guild.text_channels, name="ziener_channel")
             zieneror = await client.fetch_user(e)
             await ziener_channel.set_permissions(zieneror, overwrite=override)
 
         if "Heks" == players[e]:
-            print(f"<@{e}> is Heks")
             heks_channel = discord.utils.get(r.guild.text_channels, name="heks_channel")
             heksor = await client.fetch_user(e)
             await heks_channel.set_permissions(heksor, overwrite=override)
 
         if "Het Onschuldige Meisje" == players[e]:
-            print(f"<@{e}> is Het Onschuldige Meisje")
             meisje_channel = discord.utils.get(r.guild.text_channels, name="meisje_channel")
             meisjor = await client.fetch_user(e)
             await meisje_channel.set_permissions(meisjor, overwrite=override)
