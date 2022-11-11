@@ -199,12 +199,12 @@ async def playerjoining(s):
         msg = await client.wait_for("message", check=check)
         msg.content = msg.content.lower()
 
-        if msg.author not in players and "ik" in msg.content and msg.channel == main_channel:
+        if msg.author.id not in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> is gejoined")
             players.update({msg.author.id: "geen rol"})
             alivePlayers.append(msg.author.id)
 
-        elif msg.author in players and "ik" in msg.content and msg.channel == main_channel:
+        elif msg.author.id in players and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> already joined")
 
         if msg.content.startswith("iedereen doet mee"):
@@ -616,10 +616,11 @@ async def heks(b):
                 lijk = await client.fetch_user(playerIdList[i])
                 if lijk.name.lower() in msg.content:
                     if players[playerIdList[i]] != "Dood":
-                        await heks_channel.send(f"{lijk.name} is ook gedood")
-                        deathlist.append(playerIdList[i])
-                        heks_done = True
-                        gif = True
+                        if playerIdList[i] not in deathlist:
+                            await heks_channel.send(f"{lijk.name} is ook gedood")
+                            deathlist.append(playerIdList[i])
+                            heks_done = True
+                            gif = True
                     else:
                         await heks_channel.send(
                             "Uhm... Ik weet niet hoe ik dit moet vertellen... \n Hij is al dood...")
