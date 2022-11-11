@@ -1,9 +1,9 @@
 # bot.py
 import os
-import random
 
 import discord
 from dotenv import load_dotenv
+import random
 
 intents = discord.Intents.default()
 intents.typing = False
