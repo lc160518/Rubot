@@ -838,7 +838,7 @@ async def monarchvoting(k):
                     else:
                         tie_message = tie_message + ", " + str(tie_list[i])
                 await main_channel.send(tie_message)
-                await main_channel.send("stem opnieuw maar nu op dezelfde a.u.b.")
+                await main_channel.send("Stem opnieuw maar nu op dezelfde a.u.b.")
                 monarch_dict = {}
                 monarchvote = []
                 alGestemd = []
