@@ -1,9 +1,9 @@
 # bot.py
 import os
+import random
 
 import discord
 from dotenv import load_dotenv
-import random
 
 intents = discord.Intents.default()
 intents.typing = False
@@ -36,6 +36,7 @@ de_monarch = None
 potentiele_monarch = []
 jager_id = None
 winnaars = None
+koning = None
 
 weerwolven = []
 votes = []
@@ -162,8 +163,6 @@ async def create_channels(s):
     for e in range(0, len(possible_channels)):
         await s.guild.create_text_channel(name=possible_channels[e], reason="startup", overwrites=overwrites)
         created_channels.append(possible_channels[e])
-
-    main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
 
 
 async def playerjoining(s):
