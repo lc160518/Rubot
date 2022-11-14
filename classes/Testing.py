@@ -6,6 +6,10 @@ class Testing:
     def from_weerwolf(cls, state_given):
         cls.state = state_given
 
-class Role:
-    def __init__(self, user_name, user_id, user_role):
-        
+
+class Player:
+    def __init__(self, name, id, role, permissions):
+        self.name = name
+        self.id = id
+        self.role = role
+        self.permissions = permissions
