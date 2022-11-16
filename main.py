@@ -30,7 +30,7 @@ spelers = []  # voor de permissions
 roleNumbers = []
 playerNames = []
 alivePlayers = []
-rolesList = []
+roles_list = []
 lovers = []
 lovas = []
 already_joined_amount = 0
@@ -88,6 +88,9 @@ async def on_message(message):
     global created_channels
     global players
 
+    if message.author.id == 578908795103870990:
+        await message.delete()
+
     if client.user == message.author:
         return
 
@@ -99,6 +102,9 @@ async def on_message(message):
         players.update({238670141653516298: "hamburger"})
         guild = message.guild
         await ziener(message)
+
+    possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
+                         "cupido_channel", "meisje_channel", "dood_channel"]
 
     if message.content.startswith("delete channels"):
         text_channel_list = []
@@ -116,6 +122,13 @@ async def on_message(message):
     mrlist = []
     if message.content.startswith("add me"):
         await add_me(message, mrlist)
+
+    if message.content.startswith("roles"):
+        list1 = []
+        await role_selector(list1)
+
+    if message.content.startswith("griddy time"):
+        await message.channel.send("https://www.youtube.com/watch?v=xNemW_QjkH4")
 
 
 created_channels = []
@@ -163,11 +176,6 @@ async def find_siebe(msg, s, mrlist):
             await s.channel.send("NEEN")
 
 
-def possible_channels():
-    return ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
-            "cupido_channel", "meisje_channel", "dood_channel"]
-
-
 async def start(s):
     global guild
     global game_active
@@ -209,16 +217,18 @@ async def start(s):
 
 async def create_channels(s):
     overwrites = {
-        s.guild.default_role: discord.PermissionOverwrite(view_channel=False)}
+        s.guild.default_role: discord.PermissionOverwrite(view_channel=True)}
 
-    for e in range(0, len(possible_channels())):
+    possible_channels = ["main_channel", "weerwolf_channel", "ziener_channel", "heks_channel",
+                         "cupido_channel", "meisje_channel", "dood_channel"]
+
+    for e in range(0, len(possible_channels)):
         await s.guild.create_text_channel(name=possible_channels[e], reason="startup", overwrites=overwrites)
-        created_channels.append(possible_channels()[e])
+        created_channels.append(possible_channels[e])
 
 
-async def playerjoining(s):
+async def playerjoining(s, undef_players):
     global joining
-    global players
     global alivePlayers
 
     main_channel = discord.utils.get(s.guild.text_channels, name="main_channel")
@@ -235,21 +245,23 @@ async def playerjoining(s):
         msg = await client.wait_for("message", check=check)
         msg.content = msg.content.lower()
 
-        if msg.author.id not in players and "ik" in msg.content and msg.channel == main_channel:
+        if msg.author.id not in alivePlayers and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> is gejoined")
-            players.update({msg.author.id: "geen rol"})
+            undef_players.append(msg.author)
             alivePlayers.append(msg.author.id)
+            print("added")
 
-        elif msg.author.id in players and "ik" in msg.content and msg.channel == main_channel:
+        elif msg.author in alivePlayers and "ik" in msg.content and msg.channel == main_channel:
             await msg.channel.send(f"<@{msg.author.id}> already joined")
 
         if msg.content.startswith("iedereen doet mee"):
-            if len(players) < 6:
+            if len(alivePlayers) < 6:
                 await msg.channel.send("Er zijn niet genoeg spelers, mensen kunnen nog joinen!")
-            elif len(players) >= 6:
-                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeeldpl!")
+                return
+            elif len(alivePlayers) >= 6:
+                await msg.channel.send("Er zijn genoeg spelers, rollen worden uitgedeelt!")
                 joining = False
-    await role_selector()
+    await role_selector(undef_players)
 
 
 async def pre_game(s):
@@ -373,11 +385,12 @@ async def dood(s):
 
 
 # Gives each player a role. Returns a dict.
-async def role_selector():
-    global rolesList
+async def role_selector(undef_players):
+    print("role_selector started")
+    global roles_list
     rolesList = []
 
-    roles = {"Weerwolf": len(players) // 6,
+    roles = {"Weerwolf": len(undef_players) // 6,
              "Burger": 1,
              "Ziener": 1,
              "Heks": 1,
@@ -390,29 +403,34 @@ async def role_selector():
     for role in roles:
         for g in range((int(roles[role]))):
             rolesList.append(role)
+    print("role_selector ended")
 
-    await distribute_roles(players, rolesList)
+    await distribute_roles(rolesList, undef_players)
 
 
 # Distributes roles from rolesList to players
-async def distribute_roles(gamers, roles):
+async def distribute_roles(rolesList, undef_players):
+    print("distribute_roles started")
     global jager_id
-    playerNamesList = list(gamers)
 
-    #
-    for j in range(0, len(gamers)):
-        rNumber = random.randrange(len(roles))
-        gamers[playerNamesList[j]] = roles[rNumber]
-        del roles[rNumber]
+    def_players = []
 
-    for i in playerNamesList:
-        player = await client.fetch_user(i)
-        player_dm = await player.create_dm()
-        await player_dm.send(f"Je bent {gamers[i]}.")
+    for i in range(0, len(undef_players)):
+        rNumber = random.randrange(len(rolesList))
+        print(undef_players[i].name, undef_players[i].id, rolesList[rNumber], "placeholder")
+        user = Player(undef_players[i].name, undef_players[i].id, rolesList[rNumber], "placeholder")
+        def_players.append(user)
+        del rolesList[rNumber]
+
+    for i in range(0, len(undef_players)):
+        player_dm = await undef_players[i].create_dm()
+        await player_dm.send(f"Je bent {def_players[i].role}.")
 
     inverse_players = {value: key for key, value in players.items()}
     jager_id = inverse_players["Jager"]
-    return gamers
+    print("distribute_roles ended")
+
+    return def_players
 
 
 async def cupido(s):
@@ -932,8 +950,10 @@ def reset_dones():
 
 async def avond(s):
     await create_channels(s)
+    undef_players = []
+
     if not testing:
-        await playerjoining(s)
+        await playerjoining(s, undef_players)
     await permissies(s)
     await pre_game(s)
 
