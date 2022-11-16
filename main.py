@@ -88,9 +88,6 @@ async def on_message(message):
     global created_channels
     global players
 
-    if message.author.id == 578908795103870990:
-        await message.delete()
-
     if client.user == message.author:
         return
 
